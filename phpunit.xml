@@ -11,6 +11,10 @@
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
         </testsuite>
+
+        <testsuite name="Application Test Suite">
+            <directory suffix="Test.php">tests</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
@@ -28,5 +32,6 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="APP_URL" value="http://127.0.0.1:8000"/>
     </php>
 </phpunit>
