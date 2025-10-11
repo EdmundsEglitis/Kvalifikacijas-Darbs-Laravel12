@@ -14,7 +14,7 @@ class NewsSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1) HERO (homepage banner)
+        // 1) HERO (homepage banner) — store the STORAGE PATH in DB (e.g. news/hero/xxx.jpg)
         $heroPath = $this->downloadImageToPublic(
             url: 'https://picsum.photos/seed/lbl-hero/1600/900',
             disk: 'public',
@@ -24,7 +24,7 @@ class NewsSeeder extends Seeder
 
         News::create([
             'position'    => 'hero',
-            'hero_image'  => $heroPath,   // make sure news table has nullable hero_image column
+            'hero_image'  => $heroPath,   // keep relative storage path in DB
             'title'       => null,
             'content'     => null,
             'league_id'   => null,
@@ -90,7 +90,10 @@ class NewsSeeder extends Seeder
 
     /** ---------- Helpers below ---------- */
 
-    /** Build Trix-compatible HTML with <figure data-trix-attachment="..."> and a real image on disk */
+    /**
+     * Build Trix-compatible HTML with a real image on disk.
+     * Uses RELATIVE web paths (e.g. /storage/news/body/xxx.jpg) so it works on any host.
+     */
     private function trixContentWithImage(string $seed, string $heading, string $paragraph): string
     {
         // 1) Put an actual file on disk so the URL resolves
@@ -103,7 +106,8 @@ class NewsSeeder extends Seeder
 
         // 2) Gather image meta (mimetype, size, w/h)
         $absPath  = Storage::disk('public')->path($imgPath);
-        $url      = Storage::disk('public')->url($imgPath); // uses APP_URL
+        $absUrl   = Storage::disk('public')->url($imgPath); // absolute; we convert to relative below
+        $urlPath  = parse_url($absUrl, PHP_URL_PATH) ?: ('/storage/'.ltrim($imgPath, '/')); // <-- RELATIVE
         $mime     = mime_content_type($absPath) ?: 'image/jpeg';
         $size     = @filesize($absPath) ?: 0;
         [$w,$h]   = @getimagesize($absPath) ?: [1080,720];
@@ -115,8 +119,8 @@ class NewsSeeder extends Seeder
             "filename"    => $fileName,
             "filesize"    => $size,
             "height"      => $h,
-            "href"        => $url,
-            "url"         => $url,
+            "href"        => $urlPath, // relative
+            "url"         => $urlPath, // relative
             "width"       => $w,
         ];
         $attachmentEsc = htmlspecialchars(json_encode($attachment), ENT_QUOTES, 'UTF-8');
@@ -125,11 +129,11 @@ class NewsSeeder extends Seeder
         $attrs = ["presentation" => "gallery"];
         $attrsEsc = htmlspecialchars(json_encode($attrs), ENT_QUOTES, 'UTF-8');
 
-        // 5) Exact Trix markup (similar to what your RichEditor saves)
+        // 5) Exact Trix markup
         $figure = <<<HTML
 <figure data-trix-attachment="{$attachmentEsc}" data-trix-content-type="{$mime}" data-trix-attributes="{$attrsEsc}" class="attachment attachment--preview attachment--jpg">
-  <a href="{$url}">
-    <img src="{$url}" width="{$w}" height="{$h}">
+  <a href="{$urlPath}">
+    <img src="{$urlPath}" width="{$w}" height="{$h}">
     <figcaption class="attachment__caption">
       <span class="attachment__name">{$fileName}</span>
       <span class="attachment__size">{$this->kb($size)} KB</span>
@@ -175,7 +179,7 @@ HTML;
         return number_format(max(1, $bytes) / 1024, 2); // avoid 0.00
     }
 
-    /** Download image to the public disk; return relative path (e.g. news/body/abc.jpg) */
+    /** Download image to the public disk; return relative storage path (e.g. news/body/abc.jpg) */
     private function downloadImageToPublic(string $url, string $disk, string $dir, string $ext = 'jpg'): string
     {
         $name = Str::random(16) . '.' . $ext;

@@ -24,10 +24,10 @@ class ApiSyncService
     public function sync()
     {
         //$this->syncPlayers();
-        //$this->syncTeams();
+        $this->syncTeams();
         //$this->syncUpcomingGames();
         //$this->syncPlayerDetails();
-        $this->syncPlayerGamelogs();
+        //$this->syncPlayerGamelogs();
         //$this->syncStandingsRange(2021);
         // $this->syncGames(); 
     }
