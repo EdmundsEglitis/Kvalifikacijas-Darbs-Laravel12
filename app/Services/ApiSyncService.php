@@ -23,12 +23,12 @@ class ApiSyncService
 
     public function sync()
     {
-        //$this->syncPlayers();
         $this->syncTeams();
-        //$this->syncUpcomingGames();
-        //$this->syncPlayerDetails();
-        //$this->syncPlayerGamelogs();
-        //$this->syncStandingsRange(2021);
+        $this->syncPlayers();
+        $this->syncUpcomingGames();
+        $this->syncPlayerDetails();
+        $this->syncPlayerGamelogs();
+        $this->syncStandingsRange(2021);
         // $this->syncGames(); 
     }
 

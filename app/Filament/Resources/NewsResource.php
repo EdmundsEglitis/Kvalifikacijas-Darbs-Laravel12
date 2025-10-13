@@ -51,13 +51,23 @@ class NewsResource extends Resource
                 ->required(fn (callable $get) => $get('position') !== 'hero')
                 ->hidden(fn (callable $get)   => $get('position') === 'hero')
                 ->dehydrated(fn (callable $get) => $get('position') !== 'hero'),
-    
-            RichEditor::make('content')
+                
+                RichEditor::make('content')
                 ->label('Content')
+                ->toolbarButtons([
+                    'bold', 'italic', 'underline', 'strike',
+                    'link', 'blockquote', 'codeBlock',
+                    'bulletList', 'orderedList',
+                    'attachFiles', // enable file button in the editor
+                ])
+                // Save TRIX attachments here:
+                ->fileAttachmentsDisk('public')            // storage/app/public
+                ->fileAttachmentsDirectory('news/body')    // storage/app/public/news/body
+                ->fileAttachmentsVisibility('public')
                 ->required(fn (callable $get) => $get('position') !== 'hero')
                 ->hidden(fn (callable $get)   => $get('position') === 'hero')
                 ->dehydrated(fn (callable $get) => $get('position') !== 'hero'),
-    
+
             Select::make('league_id')
                 ->label('League')
                 ->options(League::pluck('name', 'id'))

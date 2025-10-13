@@ -39,77 +39,65 @@
   @endif
 
   <section id="news" class="py-16 bg-[#111827]">
-    <div class="max-w-7xl mx-auto px-4 space-y-12">
-      <h2 class="text-3xl font-bold text-white text-center fade-in-section opacity-0 translate-y-6">
-        {{ $subLeague->name }} – Jaunākās ziņas
-      </h2>
+  <div class="max-w-7xl mx-auto px-4 space-y-12">
+    <h2 class="text-3xl font-bold text-white text-center reveal" data-aos>
+      {{ $subLeague->name }} – Jaunākās ziņas
+    </h2>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        @foreach(['secondary-1','secondary-2'] as $slot)
-          @if(($bySlot[$slot] ?? null) && ($bySlot[$slot]->preview_image ?? null))
-            <article
-              class="group bg-[#F3F4F6] rounded-xl overflow-hidden shadow-lg border-t-4 border-[#F97316]
-                     flex flex-col transform transition-transform duration-300 ease-in-out
-                     hover:scale-105 hover:shadow-2xl fade-in-section opacity-0 translate-y-6"
-            >
-              <img loading="lazy" src="{{ $bySlot[$slot]->preview_image }}" alt="{{ $bySlot[$slot]->title }}"
-                   class="w-full h-60 object-cover transition-transform duration-300 group-hover:scale-110" />
-              <div class="p-6 flex flex-col flex-1">
-                <h3 class="text-2xl font-semibold text-[#111827] mb-2">{{ $bySlot[$slot]->title }}</h3>
-                @if(!empty($bySlot[$slot]->excerpt))
-                  <p class="flex-1 text-[#111827]/90">{{ $bySlot[$slot]->excerpt }}</p>
-                @endif
-                <div class="mt-4 flex items-center justify-between">
-                  <time class="text-sm text-[#111827]/70">
-                    {{ optional($bySlot[$slot]->created_at)->format('Y-m-d') }}
-                  </time>
-                  <a href="{{ route('lbs.news.show', $bySlot[$slot]->id) }}"
-                     class="text-[#84CC16] font-medium hover:underline">
-                    Lasīt vairāk →
-                  </a>
-                </div>
+    {{-- Big pair (secondary-1 / secondary-2) --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 stagger" data-aos>
+      @foreach(['secondary-1','secondary-2'] as $slot)
+        @if(($bySlot[$slot] ?? null))
+          @php($item = $bySlot[$slot])
+          <article
+            class="group bg-[#0f172a] rounded-2xl overflow-hidden shadow-lg border border-[#1f2937]/60 flex flex-col hover:shadow-2xl transition">
+            <div class="relative w-full h-[260px] bg-[#0b1220]">
+              @if(!empty($item->preview_image))
+                <img
+                  loading="lazy"
+                  src="{{ $item->preview_image }}"
+                  alt="{{ $item->title }}"
+                  class="absolute inset-0 m-auto max-h-full max-w-full object-contain img-fade"
+                  onload="this.classList.add('loaded')"
+                />
+              @endif
+              <div class="absolute inset-0 bg-gradient-to-t from-[#0b1220] via-transparent to-transparent"></div>
+            </div>
+
+            <div class="p-6 flex flex-col flex-1">
+              <h3 class="text-2xl font-semibold text-white mb-2 line-clamp-2">
+                {{ $item->title }}
+              </h3>
+
+              @if(!empty($item->excerpt))
+                <p class="flex-1 text-[#F3F4F6]/90 line-clamp-3">
+                  {{ $item->excerpt }}
+                </p>
+              @endif
+
+              <div class="mt-4 flex items-center justify-between">
+                <time class="text-sm text-[#F3F4F6]/60">
+                  {{ optional($item->created_at)->format('Y-m-d') }}
+                </time>
+                <a href="{{ route('lbs.news.show', $item->id) }}"
+                   class="inline-flex items-center gap-2 text-[#84CC16] font-medium hover:underline text-2xl">
+                  Lasīt vairāk <span>→</span>
+                </a>
               </div>
-            </article>
-          @endif
-        @endforeach
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        @foreach(['slot-1','slot-2','slot-3'] as $slot)
-          @if(($bySlot[$slot] ?? null) && ($bySlot[$slot]->preview_image ?? null))
-            <article
-              class="group bg-[#F3F4F6] rounded-xl overflow-hidden shadow-lg border-t-4 border-[#F97316]
-                     flex flex-col transform transition-transform duration-300 ease-in-out
-                     hover:scale-105 hover:shadow-2xl fade-in-section opacity-0 translate-y-6"
-            >
-              <img loading="lazy" src="{{ $bySlot[$slot]->preview_image }}" alt="{{ $bySlot[$slot]->title }}"
-                   class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110" />
-              <div class="p-4 flex flex-col flex-1">
-                <h4 class="text-lg font-semibold text-[#111827] mb-1">{{ $bySlot[$slot]->title }}</h4>
-                @if(!empty($bySlot[$slot]->excerpt))
-                  <p class="flex-1 text-[#111827]/90">{{ $bySlot[$slot]->excerpt }}</p>
-                @endif
-                <div class="mt-3 flex items-center justify-between">
-                  <time class="text-xs text-[#111827]/70">
-                    {{ optional($bySlot[$slot]->created_at)->format('Y-m-d') }}
-                  </time>
-                  <a href="{{ route('lbs.news.show', $bySlot[$slot]->id) }}"
-                     class="text-[#84CC16] font-medium hover:underline text-sm">
-                    Lasīt →
-                  </a>
-                </div>
-              </div>
-            </article>
-          @endif
-        @endforeach
-      </div>
-
-      @if(empty($bySlot['secondary-1']) && empty($bySlot['secondary-2'])
-          && empty($bySlot['slot-1']) && empty($bySlot['slot-2']) && empty($bySlot['slot-3']))
-        <p class="text-center text-[#F3F4F6]/70">Šeit šobrīd nav jaunumu.</p>
-      @endif
+            </div>
+          </article>
+        @endif
+      @endforeach
     </div>
-  </section>
+
+
+    {{-- Empty state --}}
+    @if(empty($bySlot['secondary-1']) && empty($bySlot['secondary-2'])
+        && empty($bySlot['slot-1']) && empty($bySlot['slot-2']) && empty($bySlot['slot-3']))
+      <p class="text-center text-[#F3F4F6]/70">Šeit šobrīd nav jaunumu.</p>
+    @endif
+  </div>
+</section>
 
   <footer class="py-8 bg-[#111827] text-[#F3F4F6]/70 text-center text-sm fade-in-section opacity-0 translate-y-6">
     &copy; {{ date('Y') }} LBS. Visas tiesības aizsargātas.

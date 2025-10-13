@@ -74,20 +74,36 @@ class SubleagueController extends Controller
 
     public function calendar($id)
     {
-        $subLeague = League::with('teams')->findOrFail($id);
+        $subLeague     = League::with('teams')->findOrFail($id);
         $parentLeagues = League::whereNull('parent_id')->get();
-
+    
         $teamIds = $subLeague->teams->pluck('id');
-
-        $games = Game::whereIn('team1_id', $teamIds)
-            ->orWhereIn('team2_id', $teamIds)
+        $now     = now();
+    
+        // Base query scoped to this subleague's teams
+        $base = Game::query()
             ->with(['team1', 'team2', 'winner'])
+            ->where(function ($q) use ($teamIds) {
+                $q->whereIn('team1_id', $teamIds)
+                  ->orWhereIn('team2_id', $teamIds);
+            });
+    
+        // Up to 9 future games, soonest first
+        $upcomingGames = (clone $base)
+            ->where('date', '>=', $now)
             ->orderBy('date', 'asc')
+            ->limit(9)
             ->get();
-
-        $upcomingGames = $games->filter(fn($g) => $g->date->isFuture());
-        $pastGames     = $games->filter(fn($g) => $g->date->isPast());
-
+    
+        // All past games (if you want, you can also paginate/limit these)
+        $pastGames = (clone $base)
+            ->where('date', '<', $now)
+            ->orderBy('date', 'desc')
+            ->get();
+    
+        // If your view still expects $games, combine both (optional)
+        $games = $upcomingGames->concat($pastGames)->values();
+    
         return view('lbs.leagues.subleagues.calendar', compact(
             'subLeague',
             'parentLeagues',

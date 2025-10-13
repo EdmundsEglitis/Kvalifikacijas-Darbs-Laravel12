@@ -224,9 +224,9 @@
                 </div>
               </div>
 
-              <a href="{{ route('nba.games.show', $g->id) }}"
+              <a href="{{ route('nba.games.upcoming') }}"
                  class="mt-4 inline-flex items-center justify-center w-full px-4 py-2 rounded-lg bg-[#84CC16] text-[#111827] font-semibold hover:bg-[#a3e635] transition tilt">
-                Game details
+                view all upcomming games
               </a>
             </article>
           @endforeach
