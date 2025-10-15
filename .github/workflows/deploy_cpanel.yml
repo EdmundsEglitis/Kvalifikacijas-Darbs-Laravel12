@@ -42,7 +42,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}     # e.g. ftp.example.com (no scheme, no :port)
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps                        # explicit FTPS
+          protocol: ftps                       # explicit FTPS
           port: 21
           security: loose                       # relax TLS for hosts with older ciphers
           local-dir: public/                    # upload only web root
@@ -57,7 +57,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps-implicit               # implicit FTPS
+          protocol: ftp          # implicit FTPS
           port: 990
           local-dir: public/
           server-dir: public_html/
