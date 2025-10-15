@@ -21,7 +21,7 @@ class Kernel extends ConsoleKernel
         \Log::info('Registering scheduler at: ' . now());
 
         $schedule->command('nba:sync-all')
-            ->everyThreeMinutes()	                    
+            ->daily()	                    
             ->runInBackground()          
             ->appendOutputTo(storage_path('logs/nba_sync.log')); 
     }
