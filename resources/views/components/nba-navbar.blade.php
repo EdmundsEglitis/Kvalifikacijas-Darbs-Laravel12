@@ -76,7 +76,7 @@
         </a>
       @endif
       <a href="{{ route('nba.teams') }}" class="block rounded px-3 py-2 font-medium transition text-[#F3F4F6]/90 hover:text-[#111827] hover:bg-[#84CC16]">
-        Teams
+        KOMANDAS
       </a>
       <a href="{{ route('nba.standings.explorer') }}" class="block rounded px-3 py-2 font-medium transition text-[#F3F4F6]/90 hover:text-[#111827] hover:bg-[#84CC16]">
         SALĪDZINĀT KOMANDAS

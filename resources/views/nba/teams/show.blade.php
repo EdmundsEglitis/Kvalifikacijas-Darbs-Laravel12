@@ -25,7 +25,7 @@
         <div class="sm:ml-auto">
           <a href="{{ $team->url }}" target="_blank"
              class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[#84CC16] text-[#111827] font-semibold hover:bg-[#a3e635] transition">
-            View on ESPN
+            Skatīt iekš ESPN
           </a>
         </div>
       @endif
@@ -38,11 +38,11 @@
     <ul class="flex flex-wrap gap-2 py-2">
       @php
         $tabs = [
-          ['#roster','Roster'],
-          ['#upcoming','Upcoming'],
-          ['#seasons','Seasons'],
-          ['#legend','Legend'],
-          ['#past-games','Past'],
+          ['#roster','Sastāvs'],
+          ['#upcoming','Tuvākās spēles'],
+          ['#seasons','Sezonas'],
+          ['#legend','Statistikas skaidrojums'],
+          ['#past-games','Pagājušās spēles'],
         ];
       @endphp
       @foreach($tabs as [$href,$label])
@@ -62,7 +62,7 @@
 
 
     <section id="roster" class="scroll-mt-28">
-      <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-white">Roster</h2>
+      <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-white">Sastāvs</h2>
 
       <div class="grid gap-4 sm:gap-5 [grid-template-columns:repeat(auto-fit,minmax(150px,1fr))]">
         @forelse($players as $player)
@@ -72,29 +72,29 @@
               <img src="{{ $player->image }}" alt="{{ $player->full_name }}"
                    class="h-16 w-16 rounded-full mb-2 object-cover ring-2 ring-[#84CC16]" loading="lazy">
             @else
-              <div class="h-16 w-16 rounded-full mb-2 grid place-items-center bg-gray-700 text-gray-400 text-xs">No Photo</div>
+              <div class="h-16 w-16 rounded-full mb-2 grid place-items-center bg-gray-700 text-gray-400 text-xs">Nav bildes</div>
             @endif
             <h3 class="text-sm font-semibold text-gray-200 text-center line-clamp-2">
               {{ $player->full_name }}
             </h3>
           </a>
         @empty
-          <p class="text-gray-400">No players found.</p>
+          <p class="text-gray-400">Nav atrasti spēlētāji</p>
         @endforelse
       </div>
     </section>
 
     
 <section id="upcoming" class="scroll-mt-28">
-    <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-white">Upcoming Games</h2>
+    <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-white">Tuvākās spēles</h2>
 <div class="overflow-x-auto bg-[#1f2937] rounded-xl border border-[#374151]">
   <table class="min-w-full text-left text-sm">
     <thead class="bg-[#0f172a] text-gray-400">
       <tr>
-        <th class="px-4 py-2">Date</th>
-        <th class="px-4 py-2">Home</th>
-        <th class="px-4 py-2">Away</th>
-        <th class="px-4 py-2">Venue</th>
+        <th class="px-4 py-2">Datums</th>
+        <th class="px-4 py-2">Mājās</th>
+        <th class="px-4 py-2">Izbraukumā</th>
+        <th class="px-4 py-2">Notikuma vieta</th>
       </tr>
     </thead>
     <tbody class="divide-y divide-[#374151] text-[#F3F4F6]">
@@ -124,21 +124,21 @@
           </td>
         </tr>
       @empty
-        <tr><td colspan="4" class="px-4 py-3 text-gray-400">No upcoming games</td></tr>
+        <tr><td colspan="4" class="px-4 py-3 text-gray-400">Neviena spēle nav tuvumā</td></tr>
       @endforelse
     </tbody>
   </table>
 </div>
-<p class="mt-2 text-xs text-gray-400 sm:hidden">Tip: you can scroll this table sideways on mobile.</p>
+<p class="mt-2 text-xs text-gray-400 sm:hidden">Ieteikums: šo tabulu var pašķirstīt uz sāniem ja skatieties no telefona.</p>
 
     </section>
 
     <section id="seasons" class="scroll-mt-28">
-      <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-white">Seasons (2021 →)</h2>
+      <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-white">Sezonas (2021 →)</h2>
 
       @if($standingsHistory->isEmpty())
         <div class="bg-[#1f2937] rounded-xl p-6 text-gray-400">
-          No standings history found.
+          Nav atrasta statistikas vēsture.
         </div>
       @else
         <div class="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
@@ -190,14 +190,14 @@
 
               <div class="flex items-end justify-between mb-4 gap-3">
                 <div>
-                  <div class="text-xs text-[#F3F4F6]/70">Record</div>
+                  <div class="text-xs text-[#F3F4F6]/70">Rekords</div>
                   <div class="text-2xl font-extrabold text-white">{{ $record }}</div>
-                  <div class="text-xs text-[#F3F4F6]/60">Win%: {{ $winPct }}</div>
+                  <div class="text-xs text-[#F3F4F6]/60">Uzvaras%: {{ $winPct }}</div>
                 </div>
                 <div class="text-right">
-                  <div class="text-xs text-[#F3F4F6]/70">Seed</div>
+                  <div class="text-xs text-[#F3F4F6]/70">Sniegums</div>
                   <div class="text-xl font-bold text-white">{{ $seed }}</div>
-                  <div class="text-xs text-[#F3F4F6]/60">GB: {{ $gb }}</div>
+                  <div class="text-xs text-[#F3F4F6]/60">SK: {{ $gb }}</div>
                 </div>
               </div>
 
@@ -207,19 +207,19 @@
                   <dd class="text-lg font-bold text-white">{{ $ppg }}</dd>
                 </div>
                 <div class="rounded-xl bg-[#0f172a]/40 border border-[#374151] p-3 text-center">
-                  <dt class="text-[11px] text-[#F3F4F6]/60">OPP PPG</dt>
+                  <dt class="text-[11px] text-[#F3F4F6]/60">Prenieku PPG</dt>
                   <dd class="text-lg font-bold text-white">{{ $opp }}</dd>
                 </div>
                 <div class="rounded-xl bg-[#0f172a]/40 border border-[#374151] p-3 text-center">
-                  <dt class="text-[11px] text-[#F3F4F6]/60">Diff</dt>
+                  <dt class="text-[11px] text-[#F3F4F6]/60">Starpība</dt>
                   <dd class="text-lg font-bold {{ $diffClass }}">{{ $diffTxt }}</dd>
                 </div>
               </dl>
 
               <div class="mt-4 flex flex-wrap gap-2 text-[11px] sm:text-xs">
-                <span class="px-2.5 py-1 rounded-full bg-white/5 text-[#F3F4F6]/80 border border-white/10">Home: {{ $home }}</span>
-                <span class="px-2.5 py-1 rounded-full bg-white/5 text-[#F3F4F6]/80 border border-white/10">Road: {{ $road }}</span>
-                <span class="px-2.5 py-1 rounded-full bg-white/5 text-[#F3F4F6]/80 border border-white/10">L10: {{ $l10 }}</span>
+                <span class="px-2.5 py-1 rounded-full bg-white/5 text-[#F3F4F6]/80 border border-white/10">Mājās: {{ $home }}</span>
+                <span class="px-2.5 py-1 rounded-full bg-white/5 text-[#F3F4F6]/80 border border-white/10">izbraukumā: {{ $road }}</span>
+                <span class="px-2.5 py-1 rounded-full bg-white/5 text-[#F3F4F6]/80 border border-white/10">P10: {{ $l10 }}</span>
               </div>
             </article>
           @endforeach
@@ -228,70 +228,70 @@
     </section>
 
     <section id="legend" class="scroll-mt-28 pb-10">
-      <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-white">Stat explanations</h2>
+      <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-white">Statistikas izskaidrojumi</h2>
 
       <div class="grid gap-3 sm:gap-4 [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]">
         <div class="bg-[#1f2937] border border-[#374151] rounded-xl p-3">
-          <div class="text-sm font-semibold text-white mb-1">Record</div>
-          <p class="text-xs text-gray-300">Wins–Losses for the season.</p>
+          <div class="text-sm font-semibold text-white mb-1">Rkords</div>
+          <p class="text-xs text-gray-300">Uzvaras pret zaudēm atiecīgajā sezonā</p>
         </div>
         <div class="bg-[#1f2937] border border-[#374151] rounded-xl p-3">
-          <div class="text-sm font-semibold text-white mb-1">Win%</div>
-          <p class="text-xs text-gray-300">Winning percentage (wins ÷ total games).</p>
+          <div class="text-sm font-semibold text-white mb-1">Uzvaras%</div>
+          <p class="text-xs text-gray-300">Uzvaras koeficents (uzvaras ÷ zaudējumi).</p>
         </div>
         <div class="bg-[#1f2937] border border-[#374151] rounded-xl p-3">
-          <div class="text-sm font-semibold text-white mb-1">Seed</div>
-          <p class="text-xs text-gray-300">Projected/Final playoff seed.</p>
+          <div class="text-sm font-semibold text-white mb-1">Sniegums</div>
+          <p class="text-xs text-gray-300">Pašreizējais/paliekošais playoff Sniegums.</p>
         </div>
         <div class="bg-[#1f2937] border border-[#374151] rounded-xl p-3">
-          <div class="text-sm font-semibold text-white mb-1">GB</div>
-          <p class="text-xs text-gray-300">Games behind the conference/league leader.</p>
+          <div class="text-sm font-semibold text-white mb-1">SK</div>
+          <p class="text-xs text-gray-300">Cik ļoti šī komanda atpaliek kopējā spēļu skaitā salīdzinot ar komandu kura ir izspēlējusi visvairāk spēļu.</p>
         </div>
         <div class="bg-[#1f2937] border border-[#374151] rounded-xl p-3">
           <div class="text-sm font-semibold text-white mb-1">PPG</div>
-          <p class="text-xs text-gray-300">Average points scored per game.</p>
+          <p class="text-xs text-gray-300">Vidējais punktu skaits spēlē.</p>
         </div>
         <div class="bg-[#1f2937] border border-[#374151] rounded-xl p-3">
-          <div class="text-sm font-semibold text-white mb-1">OPP PPG</div>
-          <p class="text-xs text-gray-300">Average points allowed per game.</p>
+          <div class="text-sm font-semibold text-white mb-1">Pretinieku PPG</div>
+          <p class="text-xs text-gray-300">Vidējie pieļautie punkti spēlē.</p>
         </div>
         <div class="bg-[#1f2937] border border-[#374151] rounded-xl p-3">
-          <div class="text-sm font-semibold text-white mb-1">Diff</div>
-          <p class="text-xs text-gray-300">Point differential (Points For − Points Against).</p>
+          <div class="text-sm font-semibold text-white mb-1">Starpība</div>
+          <p class="text-xs text-gray-300">Punktu pārsvars (cik punktus iemet un cik pieļauj).</p>
         </div>
         <div class="bg-[#1f2937] border border-[#374151] rounded-xl p-3">
-          <div class="text-sm font-semibold text-white mb-1">Home / Road</div>
-          <p class="text-xs text-gray-300">Win–loss records in home and away games.</p>
+          <div class="text-sm font-semibold text-white mb-1">Mājās / Izbraukumā</div>
+          <p class="text-xs text-gray-300">Uzvaras–zaudējumu statistika mājas spēlēs un izbraukuma spēlēs.</p>
         </div>
         <div class="bg-[#1f2937] border border-[#374151] rounded-xl p-3">
-          <div class="text-sm font-semibold text-white mb-1">L10</div>
-          <p class="text-xs text-gray-300">Win–loss record across the last 10 games.</p>
+          <div class="text-sm font-semibold text-white mb-1">P10</div>
+          <p class="text-xs text-gray-300">Uzvaras–zaudējumu statistika pēdējās 10 spēlēs.</p>
         </div>
         <div class="bg-[#1f2937] border border-[#374151] rounded-xl p-3">
-          <div class="text-sm font-semibold text-white mb-1">Streak</div>
-          <p class="text-xs text-gray-300">Current win (W) or loss (L) streak length.</p>
+          <div class="text-sm font-semibold text-white mb-1">Uzvaras vai zaudējumi pēc kārtas</div>
+          <p class="text-xs text-gray-300">Pašreizējā par uzvarētām spēlēm pēc kārtas vai zaudētām spēlēm pēc kārtas apzīmēts ar W/L (piemēram W8).</p>
         </div>
       </div>
     </section>
 
     {{-- Past games (from logs) --}}
     <section id="past-games" class="scroll-mt-28">
-  <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-white">Past Games</h2>
+  <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-white">Azivadītās spēles</h2>
 
   @if(($pastGames ?? collect())->isEmpty())
     <div class="bg-[#1f2937] rounded-xl p-6 text-gray-400">
-      No past games found.
+      Nav atrastas aizvadītās spēles
     </div>
   @else
     <div class="overflow-x-auto bg-[#1f2937] rounded-xl border border-[#374151]">
       <table class="min-w-full text-left text-sm">
         <thead class="bg-[#0f172a] text-gray-400">
           <tr>
-            <th class="px-4 py-2">Date</th>
-            <th class="px-4 py-2">Opponent</th>
-            <th class="px-4 py-2">Result</th>
-            <th class="px-4 py-2">Score</th>
-            <th class="px-4 py-2 text-right">Box</th>
+            <th class="px-4 py-2">Datums</th>
+            <th class="px-4 py-2">Pretinieks</th>
+            <th class="px-4 py-2">Rezultāts</th>
+            <th class="px-4 py-2">Punkti</th>
+            <th class="px-4 py-2 text-right">Detalizēts skats</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-[#374151] text-[#F3F4F6]">
@@ -318,7 +318,7 @@
               <td class="px-4 py-2 text-right">
                 <a href="{{ route('nba.games.show', ['eventId' => $g->event_id]) }}"
                    class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20">
-                  View box score
+                  Skatīt detalizētāk
                 </a>
               </td>
             </tr>
@@ -326,7 +326,7 @@
         </tbody>
       </table>
     </div>
-    <p class="mt-2 text-xs text-gray-400 sm:hidden">Tip: you can scroll this table sideways on mobile.</p>
+    <p class="mt-2 text-xs text-gray-400 sm:hidden">Ieteikums: šo tabulu var pašķirstīt uz sāniem ja skatieties no telefona.</p>
   @endif
 </section>
 

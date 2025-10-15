@@ -59,7 +59,7 @@
       <div class="flex items-center justify-between px-4 py-3 bg-[#0f172a] border-b border-[#1f2937]">
         <h2 class="font-semibold select-none">NBA komandas</h2>
         <button class="panel-expand px-3 py-1.5 rounded bg-white/10 hover:bg-white/20" data-target="#nbaPanel">
-          Maximize
+          Palielināt
         </button>
       </div>
 
@@ -72,10 +72,10 @@
               <th class="px-3 py-2 text-left">Komanda</th>
               <th class="px-3 py-2 text-right">W</th>
               <th class="px-3 py-2 text-right">L</th>
-              <th class="px-3 py-2 text-right">Win%</th>
+              <th class="px-3 py-2 text-right">Uzvaras%</th>
               <th class="px-3 py-2 text-right">PPG</th>
-              <th class="px-3 py-2 text-right">OPP PPG</th>
-              <th class="px-3 py-2 text-right">Diff</th>
+              <th class="px-3 py-2 text-right">Pretinieku PPG</th>
+              <th class="px-3 py-2 text-right">Starpība</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-[#1f2937] text-[#F3F4F6]">
@@ -130,7 +130,7 @@
       <div class="flex items-center justify-between px-4 py-3 bg-[#0f172a] border-b border-[#1f2937]">
         <h2 class="font-semibold select-none">LBS komandas</h2>
         <button class="panel-expand px-3 py-1.5 rounded bg-white/10 hover:bg-white/20" data-target="#lbsPanel">
-          Maximize
+          Palielināt
         </button>
       </div>
 
@@ -143,10 +143,10 @@
               <th class="px-3 py-2 text-left">Komanda</th>
               <th class="px-3 py-2 text-right">W</th>
               <th class="px-3 py-2 text-right">L</th>
-              <th class="px-3 py-2 text-right">Win%</th>
+              <th class="px-3 py-2 text-right">Uzvaras%</th>
               <th class="px-3 py-2 text-right">PPG</th>
-              <th class="px-3 py-2 text-right">OPP PPG</th>
-              <th class="px-3 py-2 text-right">Diff</th>
+              <th class="px-3 py-2 text-right">Pretinieku PPG</th>
+              <th class="px-3 py-2 text-right">Starpība</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-[#1f2937] text-[#F3F4F6]">

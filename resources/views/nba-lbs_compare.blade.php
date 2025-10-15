@@ -62,7 +62,7 @@
       <div class="flex items-center justify-between px-4 py-3 bg-[#0f172a] border-b border-[#1f2937]">
         <h2 class="font-semibold select-none">NBA spēlētāji</h2>
         <button class="panel-expand px-3 py-1.5 rounded bg-white/10 hover:bg-white/20" data-target="#nbaPanel">
-          Maximize
+          Palielināt
         </button>
       </div>
 
@@ -141,7 +141,7 @@
       <div class="flex items-center justify-between px-4 py-3 bg-[#0f172a] border-b border-[#1f2937]">
         <h2 class="font-semibold select-none">LBS spēlētāji</h2>
         <button class="panel-expand px-3 py-1.5 rounded bg-white/10 hover:bg-white/20" data-target="#lbsPanel">
-          Maximize
+          Palielināt
         </button>
       </div>
 

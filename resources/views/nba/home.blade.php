@@ -89,7 +89,7 @@
     <div class="w-[220px] max-w-[90vw] text-[#F3F4F6] space-y-3">
       <div class="flex items-center gap-3">
         <div class="h-6 w-6 rounded-full border-2 border-white/20 border-t-white spin"></div>
-        <span class="text-sm">Loading NBA Hub…</span>
+        <span class="text-sm">Lādē NBA Hub…</span>
       </div>
       <div class="bar"></div>
     </div>
@@ -133,16 +133,16 @@
           NBA Hub
         </h1>
         <p class="text-[#F3F4F6]/90 max-w-xl">
-          Players, teams, standings, schedules, and deep dive comparisons—built on your NBA data.
+          Spēlētāji, komandas, statistika, grafiki, un detalizēti salīdzinājumi par NBA datiem.
         </p>
         <div class="flex flex-wrap gap-3">
           <a href="{{ route('nba.players') }}"
              class="px-6 py-3 rounded-full bg-[#84CC16] text-[#111827] font-semibold hover:bg-[#a6e23a] transition tilt">
-            Explore Players
+            Iepazīsti Spēlētājus
           </a>
           <a href="{{ route('nba.teams') }}"
              class="px-6 py-3 rounded-full bg-white/10 text-white border border-white/20 hover:bg-white/20 transition tilt">
-            Browse Teams
+            Iepazīsti komandas
           </a>
         </div>
       </div>
@@ -153,39 +153,39 @@
 
     <section class="reveal" data-stagger>
       <h2 class="text-2xl font-bold text-white mb-4">
-        <span class="accent-underline">Quick Navigation</span>
+        <span class="accent-underline">Ātrā navigācija</span>
       </h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <a href="{{ route('nba.games.upcoming') }}"
            class="group rounded-2xl p-6 bg-[#0f172a] border border-[#1f2937]/70 hover:border-[#84CC16] transition shadow tilt">
-          <div class="text-sm text-[#9CA3AF]">Games</div>
-          <div class="mt-2 text-2xl font-bold text-white">Upcoming</div>
-          <div class="mt-3 text-[#F3F4F6]/80">See tonight’s slate and what’s next.</div>
-          <div class="mt-4 text-[#84CC16] font-semibold">Open →</div>
+          <div class="text-sm text-[#9CA3AF]">Spēles</div>
+          <div class="mt-2 text-2xl font-bold text-white">Tuvākās spēles</div>
+          <div class="mt-3 text-[#F3F4F6]/80">redzi vistuvākās spēles pēc jūsu laika</div>
+          <div class="mt-4 text-[#84CC16] font-semibold">Atvērt →</div>
         </a>
 
         <a href="{{ route('nba.standings.explorer') }}"
            class="group rounded-2xl p-6 bg-[#0f172a] border border-[#1f2937]/70 hover:border-[#84CC16] transition shadow tilt">
-          <div class="text-sm text-[#9CA3AF]">Standings</div>
-          <div class="mt-2 text-2xl font-bold text-white">Explorer</div>
-          <div class="mt-3 text-[#F3F4F6]/80">Compare teams across seasons and metrics.</div>
-          <div class="mt-4 text-[#84CC16] font-semibold">Open →</div>
+          <div class="text-sm text-[#9CA3AF]">Statistika</div>
+          <div class="mt-2 text-2xl font-bold text-white">komandu statistika un to salīdzināšana</div>
+          <div class="mt-3 text-[#F3F4F6]/80">Salīdzini NBA komandas pēc to sniegumu jebkurā no piedāvātajām sezonām</div>
+          <div class="mt-4 text-[#84CC16] font-semibold">Atvērt →</div>
         </a>
 
         <a href="{{ route('nba.compare') }}"
            class="group rounded-2xl p-6 bg-[#0f172a] border border-[#1f2937]/70 hover:border-[#84CC16] transition shadow tilt">
-          <div class="text-sm text-[#9CA3AF]">Players</div>
-          <div class="mt-2 text-2xl font-bold text-white">Compare</div>
-          <div class="mt-3 text-[#F3F4F6]/80">Side-by-side season summaries.</div>
-          <div class="mt-4 text-[#84CC16] font-semibold">Open →</div>
+          <div class="text-sm text-[#9CA3AF]">Spēlētāji</div>
+          <div class="mt-2 text-2xl font-bold text-white">Salīdzini</div>
+          <div class="mt-3 text-[#F3F4F6]/80">Salīdzini NBA spēlētājus pēc to statistikas</div>
+          <div class="mt-4 text-[#84CC16] font-semibold">Atvērt →</div>
         </a>
 
         <a href="{{ route('nba.teams') }}"
            class="group rounded-2xl p-6 bg-[#0f172a] border border-[#1f2937]/70 hover:border-[#84CC16] transition shadow tilt">
-          <div class="text-sm text-[#9CA3AF]">Teams</div>
-          <div class="mt-2 text-2xl font-bold text-white">Directory</div>
-          <div class="mt-3 text-[#F3F4F6]/80">Logos, rosters, and schedule.</div>
-          <div class="mt-4 text-[#84CC16] font-semibold">Open →</div>
+          <div class="text-sm text-[#9CA3AF]">Komandas</div>
+          <div class="mt-2 text-2xl font-bold text-white">Apskati visas komandas</div>
+          <div class="mt-3 text-[#F3F4F6]/80">Izvēlies kādu no komandām un igūsti visu aktuālāko informāciju</div>
+          <div class="mt-4 text-[#84CC16] font-semibold">Atvērt →</div>
         </a>
       </div>
     </section>
@@ -226,7 +226,7 @@
 
               <a href="{{ route('nba.games.upcoming') }}"
                  class="mt-4 inline-flex items-center justify-center w-full px-4 py-2 rounded-lg bg-[#84CC16] text-[#111827] font-semibold hover:bg-[#a3e635] transition tilt">
-                view all upcomming games
+                Redzēt visas tuvākās spēles
               </a>
             </article>
           @endforeach
@@ -237,7 +237,7 @@
     @if($topPpg->isNotEmpty())
       <section class="reveal">
         <h2 class="text-2xl font-bold text-white mb-4">
-          <span class="accent-underline">Top Scorers ({{ date('Y') }})</span>
+          <span class="accent-underline">Visrezultatīvākie spēlētāji ({{ date('Y') }})</span>
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-stagger>
           @foreach($topPpg as $row)
@@ -255,7 +255,7 @@
                 <div>
                   <span class="block font-semibold text-white transition-colors group-hover:text-[#84CC16]">
                   </span>
-                  <div class="text-xs text-[#9CA3AF]">{{ $row->g }} games</div>
+                  <div class="text-xs text-[#9CA3AF]">{{ $row->g }} Spēles</div>
                 </div>
               </div>
 
@@ -275,20 +275,20 @@
       <section class="reveal">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-2xl font-bold text-white accent-underline">Standings Snapshot ({{ $latestSeason }})</h2>
-          <a href="{{ route('nba.standings.explorer') }}" class="text-[#84CC16] font-medium hover:underline">Open Explorer →</a>
+          <a href="{{ route('nba.standings.explorer') }}" class="text-[#84CC16] font-medium hover:underline">Atvērt pārlūku →</a>
         </div>
 
         <div class="overflow-x-auto rounded-2xl border border-[#1f2937]/70 shadow">
           <table class="min-w-[720px] w-full">
             <thead class="bg-[#0f172a] text-[#F3F4F6]/70 text-xs uppercase">
               <tr>
-                <th class="px-4 py-3 text-left">Team</th>
+                <th class="px-4 py-3 text-left">Komanda</th>
                 <th class="px-4 py-3 text-right">W</th>
                 <th class="px-4 py-3 text-right">L</th>
-                <th class="px-4 py-3 text-right">Win%</th>
+                <th class="px-4 py-3 text-right">Uzvaras%</th>
                 <th class="px-4 py-3 text-right">PPG</th>
                 <th class="px-4 py-3 text-right">OPP PPG</th>
-                <th class="px-4 py-3 text-right">Diff</th>
+                <th class="px-4 py-3 text-right">Starpība</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-[#1f2937] bg-[#0b1220]">
@@ -337,7 +337,7 @@
     @if($teams->isNotEmpty())
       <section class="reveal">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-2xl font-bold text-white accent-underline">Featured Teams</h2>
+          <h2 class="text-2xl font-bold text-white accent-underline">Aktuālas komandas</h2>
           <a href="{{ route('nba.teams') }}" class="text-[#84CC16] font-medium hover:underline">Redzēt visas →</a>
         </div>
 
