@@ -154,32 +154,48 @@ class CrossLeagueCompareController extends Controller
             });
         }
 
-        $lbsAggregatedQuery = $lbsStatsQuery
-            ->selectRaw("
-                players.id AS player_id, players.name AS player_name, players.photo AS player_photo,
-                teams.id AS team_id, teams.name AS team_name, teams.logo AS team_logo,
-                YEAR(games.date) AS season,
-                COUNT(*) AS g,
-                SUM(CASE WHEN games.winner_id = pgs.team_id THEN 1 ELSE 0 END) AS wins,
+       $lbsAggregatedQuery = $lbsStatsQuery
+    ->selectRaw("
+        players.id   AS player_id,
+        players.name AS player_name,
+        players.photo AS player_photo,
+        teams.id     AS team_id,
+        teams.name   AS team_name,
+        teams.logo   AS team_logo,
+        YEAR(games.date) AS season,
 
-                SUM(pgs.points) AS pts,
-                SUM(pgs.reb)    AS reb,
-                SUM(pgs.ast)    AS ast,
-                SUM(pgs.stl)    AS stl,
-                SUM(pgs.blk)    AS blk,
-                SUM(pgs.tov)    AS tov,
+        COUNT(*) AS g,
+        SUM(CASE WHEN games.winner_id = pgs.team_id THEN 1 ELSE 0 END) AS wins,
 
-                SUM(pgs.fgm2 + pgs.fgm3) AS fgm,
-                SUM(pgs.fga2 + pgs.fga3) AS fga,
-                SUM(pgs.fgm3)            AS tpm,
-                SUM(pgs.fga3)            AS tpa,
-                SUM(pgs.ftm)             AS ftm,
-                SUM(pgs.fta)             AS fta
-            ")
-            ->groupBy('player_id','player_name','player_photo','team_id','team_name','team_logo','season')
-            ->orderByDesc('season')->orderBy('player_name');
+        SUM(pgs.points) AS pts,
+        SUM(pgs.reb)    AS reb,
+        SUM(pgs.ast)    AS ast,
+        SUM(pgs.stl)    AS stl,
+        SUM(pgs.blk)    AS blk,
+        SUM(pgs.tov)    AS tov,
 
-        $lbsAggregatedRows   = $lbsAggregatedQuery->get();
+        SUM(pgs.fgm2 + pgs.fgm3) AS fgm,
+        SUM(pgs.fga2 + pgs.fga3) AS fga,
+        SUM(pgs.fgm3)            AS tpm,
+        SUM(pgs.fga3)            AS tpa,
+        SUM(pgs.ftm)             AS ftm,
+        SUM(pgs.fta)             AS fta
+    ")
+    /* group by the real columns/expressions, NOT the aliases */
+    ->groupByRaw('
+        players.id,
+        players.name,
+        players.photo,
+        teams.id,
+        teams.name,
+        teams.logo,
+        YEAR(games.date)
+    ')
+    /* safe ordering */
+    ->orderByRaw('YEAR(games.date) DESC')
+    ->orderBy('players.name');
+
+$lbsAggregatedRows = $lbsAggregatedQuery->get();
         $lbsTotalCount       = $lbsAggregatedRows->count();
         $lbsPaginatedSegment = $lbsAggregatedRows
             ->slice(($lbsCurrentPage-1)*$lbsPerPage, $lbsPerPage)
