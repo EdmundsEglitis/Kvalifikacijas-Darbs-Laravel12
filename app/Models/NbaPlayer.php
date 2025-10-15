@@ -25,7 +25,7 @@ class NbaPlayer extends Model
 
 public function gamelogs()
 {
-    return $this->hasMany(NbaPlayerGameLog::class, 'player_external_id', 'external_id');
+    return $this->hasMany(NbaPlayerGamelog::class, 'player_external_id', 'external_id');
 }
 
 public function getRouteKeyName()
