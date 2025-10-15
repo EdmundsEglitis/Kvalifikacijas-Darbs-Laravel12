@@ -1,16 +1,23 @@
 name: Publish the Website to cPanel
+
 on:
   push:
     branches:
       - main
 
+# Prevent overlapping deploys to the same branch
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  FTP-Deploy-Action:
+  deploy:
     name: FTP-Deploy-Action
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4.1.1
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
 
       - name: Use Node.js 22
         uses: actions/setup-node@v4
@@ -19,18 +26,39 @@ jobs:
 
       - name: Build Project
         run: |
-          npm install
+          npm ci
           npm run build
 
-      - name: FTP-Deploy-Action
+      # Optional sanity check — shows what will be uploaded
+      - name: Show public/ contents
+        run: |
+          ls -la public || true
+
+      # Primary: explicit FTPS on port 21 (most common for cPanel)
+      - name: Deploy via FTPS (explicit)
+        id: deploy_ftps_explicit
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}   # e.g. ftp.example.com (no scheme, no :port)
+          server: ${{ secrets.FTP_SERVER }}     # e.g. ftp.example.com (no scheme, no :port)
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps                      # use FTPS
+          protocol: ftps                        # explicit FTPS
           port: 21
-          local-dir: public/                  # upload only your web root
-          server-dir: public_html/            # adjust if your host uses a subdir
+          security: loose                       # relax TLS for hosts with older ciphers
+          local-dir: public/                    # upload only web root
+          server-dir: public_html/              # your cPanel web root (adjust if needed)
           timeout: 60000
-          # security: loose                   # uncomment if strict TLS fails
+
+      # Fallback: some hosts use implicit FTPS on port 990
+      - name: Deploy via FTPS (implicit fallback)
+        if: ${{ failure() }}
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps-implicit               # implicit FTPS
+          port: 990
+          local-dir: public/
+          server-dir: public_html/
+          timeout: 60000
