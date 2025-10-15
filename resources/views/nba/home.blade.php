@@ -338,7 +338,7 @@
       <section class="reveal">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-2xl font-bold text-white accent-underline">Featured Teams</h2>
-          <a href="{{ route('nba.teams') }}" class="text-[#84CC16] font-medium hover:underline">See all →</a>
+          <a href="{{ route('nba.teams') }}" class="text-[#84CC16] font-medium hover:underline">Redzēt visas →</a>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5" data-stagger>
