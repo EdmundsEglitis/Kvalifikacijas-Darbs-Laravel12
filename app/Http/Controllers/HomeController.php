@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\News;
 use App\Models\Game;
-use App\Models\NbaPlayerGameLog;
+use App\Models\NbaPlayerGamelog;
 
 class HomeController extends Controller
 {
@@ -54,7 +54,7 @@ class HomeController extends Controller
                 ];
             });
 
-        $latestDate = \App\Models\NbaPlayerGameLog::query()
+        $latestDate = \App\Models\NbaPlayerGamelog::query()
             ->whereNotNull('score')
             ->whereNotNull('game_date')
             ->max('game_date');
@@ -62,7 +62,7 @@ class HomeController extends Controller
         $nba = null;
 
         if ($latestDate) {
-            $lastNba = \App\Models\NbaPlayerGameLog::query()
+            $lastNba = \App\Models\NbaPlayerGamelog::query()
                 ->join('nba_players as p', 'p.external_id', '=', 'nba_player_game_logs.player_external_id')
                 ->where('nba_player_game_logs.game_date', $latestDate)
                 ->whereNotNull('nba_player_game_logs.score')
@@ -124,7 +124,7 @@ class HomeController extends Controller
 
         $year = (int) date('Y');
 
-        $base = NbaPlayerGameLog::query()
+        $base = NbaPlayerGamelog::query()
             ->join('nba_players as p', 'p.external_id', '=', 'nba_player_game_logs.player_external_id')
             ->leftJoin('nba_player_details as d', 'd.external_id', '=', 'p.external_id')
             ->whereRaw('YEAR(nba_player_game_logs.game_date) = ?', [$year])
