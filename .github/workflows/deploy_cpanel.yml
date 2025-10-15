@@ -58,7 +58,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp          # implicit FTPS
-          port: 990
+          port: 21
           local-dir: public/
           server-dir: public_html/
           timeout: 60000
