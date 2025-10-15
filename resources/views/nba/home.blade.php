@@ -193,7 +193,7 @@
     @if($upcomingGames->isNotEmpty())
       <section class="reveal">
         <h2 class="text-2xl font-bold text-white mb-4">
-          <span class="accent-underline">Upcoming Games</span>
+          <span class="accent-underline">Tuvākās spēles</span>
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-stagger>
           @foreach($upcomingGames as $g)
