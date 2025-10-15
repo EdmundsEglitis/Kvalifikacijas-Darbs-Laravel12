@@ -1,64 +1,25 @@
 name: Publish the Website to cPanel
-
 on:
   push:
     branches:
       - main
-
-# Prevent overlapping deploys to the same branch
-concurrency:
-  group: deploy-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  deploy:
+  FTP-Deploy-Action:
     name: FTP-Deploy-Action
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4.1.1
-
+      - uses: actions/checkout@v4.1.1
       - name: Use Node.js 22
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
       - name: Build Project
         run: |
-          npm ci
+          npm install
           npm run build
-
-      # Optional sanity check — shows what will be uploaded
-      - name: Show public/ contents
-        run: |
-          ls -la public || true
-
-      # Primary: explicit FTPS on port 21 (most common for cPanel)
-      - name: Deploy via FTPS (explicit)
-        id: deploy_ftps_explicit
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}     # e.g. ftp.example.com (no scheme, no :port)
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps                       # explicit FTPS
-          port: 21
-          security: loose                       # relax TLS for hosts with older ciphers
-          local-dir: public/                    # upload only web root
-          server-dir: public_html/              # your cPanel web root (adjust if needed)
-          timeout: 60000
-
-      # Fallback: some hosts use implicit FTPS on port 990
-      - name: Deploy via FTPS (implicit fallback)
-        if: ${{ failure() }}
+      - name: FTP-Deploy-Action
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp          # implicit FTPS
-          port: 21
-          local-dir: public/
-          server-dir: public_html/
-          timeout: 60000
