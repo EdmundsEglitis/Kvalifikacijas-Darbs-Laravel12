@@ -110,10 +110,10 @@ class GameController extends Controller
                 'winnerQ'   => $winnerLike,
                 'per'       => $per,
                 'legend'    => [
-                    ['Date/Time', 'Game date taken from logs.'],
-                    ['Score',     'Final score from logs; rebuilt if missing.'],
-                    ['Home/Away', 'Resolved by the two most frequent teams in the event logs.'],
-                    ['Winner',    'Derived from summed player points.'],
+                    ['Datums/Laiks', 'Spēles datums un laiks kurā tā notika'],
+                    ['Rezultāts',     'Gala rezultāts'],
+                    ['Mājinieki/Viesi', 'Kura komanda spēlēja mājas spēli un kura bija viesos'],
+                    ['Uzvarētājs',    'Kura koamnda uzvarēja spēli'],
                 ],
             ]);
         }
@@ -211,10 +211,10 @@ class GameController extends Controller
             'winnerQ'   => $winnerLike,
             'per'       => $per,
             'legend'    => [
-                ['Date/Time', 'Game date taken from logs.'],
-                ['Score',     'Final score from logs; rebuilt if missing.'],
-                ['Home/Away', 'Resolved by the two most frequent teams in the event logs.'],
-                ['Winner',    'Derived from summed player points.'],
+                ['Datums/Laiks', 'Spēles datums un laiks kurā tā notika'],
+                ['Rezultāts',     'Gala rezultāts'],
+                ['Mājinieki/Viesi', 'Kura komanda spēlēja mājas spēli un kura bija viesos'],
+                ['Uzvarētājs',    'Kura koamnda uzvarēja spēli'],
             ],
         ]);
     }

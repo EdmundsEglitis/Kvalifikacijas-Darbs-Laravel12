@@ -1,5 +1,5 @@
 @extends('layouts.nba')
-@section('title','Team Compare')
+@section('title','Komandu salīdzināšana')
 
 @section('content')
   <main class="max-w-7xl mx-auto px-4 py-6 space-y-8">
@@ -7,7 +7,7 @@
     <section class="bg-[#1f2937] border border-[#374151] rounded-xl p-4 sm:p-5">
       <form class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 items-end" method="GET">
         <div>
-          <label class="block text-xs text-gray-400 mb-1">From season</label>
+          <label class="block text-xs text-gray-400 mb-1">No sezonas</label>
           <select name="from" class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none">
             @foreach($seasons as $s)
               <option value="{{ $s }}" {{ (int)$from === (int)$s ? 'selected' : '' }}>{{ $s }}</option>
@@ -16,7 +16,7 @@
         </div>
 
         <div>
-          <label class="block text-xs text-gray-400 mb-1">To season</label>
+          <label class="block text-xs text-gray-400 mb-1">Līdz sezonai</label>
           <select name="to" class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none">
             @foreach($seasons as $s)
               <option value="{{ $s }}" {{ (int)$to === (int)$s ? 'selected' : '' }}>{{ $s }}</option>
@@ -25,26 +25,26 @@
         </div>
 
         <div class="sm:col-span-2 lg:col-span-1">
-          <label class="block text-xs text-gray-400 mb-1">Team (name or abbr.)</label>
+          <label class="block text-xs text-gray-400 mb-1">Komanda (nosaukums vai saīsinājums)</label>
           <input name="team" value="{{ $teamQuery }}"
-                 placeholder="e.g. BOS or Celtics"
+                 placeholder="piem., BOS vai Celtics"
                  class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none" />
         </div>
 
         <div class="lg:col-span-1 sm:col-span-2 flex items-end gap-3">
           <button type="submit"
                   class="px-4 py-2 rounded-lg bg-[#84CC16] text-[#111827] font-semibold hover:bg-[#a3e635]">
-            Apply filters
+            Piemērot filtrus
           </button>
           <a href="{{ url()->current() }}"
              class="px-4 py-2 rounded-lg bg-white/5 text-white hover:bg-white/10 border border-white/10">
-            Reset
+            Atiestatīt
           </a>
         </div>
       </form>
 
       <div class="mt-4 lg:mt-6 flex flex-wrap items-center gap-3">
-        <input id="q" type="text" placeholder="Quick search in table…"
+        <input id="q" type="text" placeholder="Ātrā meklēšana tabulā…"
                class="flex-1 min-w-[220px] bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none" />
       </div>
     </section>
@@ -52,20 +52,20 @@
     <section class="bg-[#1f2937] border border-[#374151] rounded-xl p-4 sm:p-5">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="text-sm text-gray-300">
-          Select rows with the checkbox to compare (up to 5).
+          Atlasiet rindas ar izvēles rūtiņu, lai salīdzinātu (līdz 5).
         </div>
         <div class="flex gap-2">
           <button id="compareBtn" class="px-3 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 disabled:opacity-40" disabled>
-            Compare selected
+            Salīdzināt atlasītās
           </button>
           <button id="clearSelBtn" class="px-3 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20">
-            Clear selection
+            Notīrīt atlasi
           </button>
         </div>
       </div>
 
       <div id="compareArea" class="mt-4 hidden">
-        <h3 class="text-white font-semibold mb-3">Comparison</h3>
+        <h3 class="text-white font-semibold mb-3">Salīdzinājums</h3>
         <div id="compareGrid" class="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]"></div>
       </div>
     </section>
@@ -76,22 +76,22 @@
           <thead class="bg-[#0f172a] text-gray-300 sticky top-0 z-10">
             <tr>
               <th class="px-3 py-2 w-10"></th>
-              <th data-sort="season" class="px-3 py-2 text-left cursor-pointer select-none hover:text-white">Season</th>
-              <th data-sort="team_name" class="px-3 py-2 text-left cursor-pointer select-none hover:text-white">Team</th>
-              <th data-sort="abbreviation" class="px-3 py-2 text-center cursor-pointer select-none hover:text-white">Abbr.</th>
-              <th data-sort="wins" class="px-3 py-2 text-right cursor-pointer select-none hover:text-white">W</th>
-              <th data-sort="losses" class="px-3 py-2 text-right cursor-pointer select-none hover:text-white">L</th>
-              <th data-sort="win_percent" class="px-3 py-2 text-right cursor-pointer select-none hover:text-white">Win%</th>
-              <th data-sort="playoff_seed" class="px-3 py-2 text-right cursor-pointer select-none hover:text-white">Seed</th>
+              <th data-sort="season" class="px-3 py-2 text-left cursor-pointer select-none hover:text-white">Sezona</th>
+              <th data-sort="team_name" class="px-3 py-2 text-left cursor-pointer select-none hover:text-white">Komanda</th>
+              <th data-sort="abbreviation" class="px-3 py-2 text-center cursor-pointer select-none hover:text-white">Saīsn.</th>
+              <th data-sort="wins" class="px-3 py-2 text-right cursor-pointer select-none hover:text-white">U</th>
+              <th data-sort="losses" class="px-3 py-2 text-right cursor-pointer select-none hover:text-white">Z</th>
+              <th data-sort="win_percent" class="px-3 py-2 text-right cursor-pointer select-none hover:text-white">Uzv.%</th>
+              <th data-sort="playoff_seed" class="px-3 py-2 text-right cursor-pointer select-none hover:text-white">Sēkla</th>
               <th data-sort="games_behind" class="px-3 py-2 text-right cursor-pointer select-none hover:text-white">GB</th>
               <th data-sort="avg_points_for" class="px-3 py-2 text-right cursor-pointer select-none hover:text-white">PPG</th>
               <th data-sort="avg_points_against" class="px-3 py-2 text-right cursor-pointer select-none hover:text-white">OPP PPG</th>
-              <th data-sort="point_differential" class="px-3 py-2 text-right cursor-pointer select-none hover:text-white">Diff</th>
-              <th data-sort="home_record" class="px-3 py-2 text-center cursor-pointer select-none hover:text-white">Home</th>
-              <th data-sort="road_record" class="px-3 py-2 text-center cursor-pointer select-none hover:text-white">Road</th>
-              <th data-sort="last_ten" class="px-3 py-2 text-center cursor-pointer select-none hover:text-white">L10</th>
-              <th data-sort="streak" class="px-3 py-2 text-center cursor-pointer select-none hover:text-white">Streak</th>
-              <th data-sort="clincher" class="px-3 py-2 text-center cursor-pointer select-none hover:text-white">Clinch</th>
+              <th data-sort="point_differential" class="px-3 py-2 text-right cursor-pointer select-none hover:text-white">Starpl.</th>
+              <th data-sort="home_record" class="px-3 py-2 text-center cursor-pointer select-none hover:text-white">Mājās</th>
+              <th data-sort="road_record" class="px-3 py-2 text-center cursor-pointer select-none hover:text-white">Izbraukumā</th>
+              <th data-sort="last_ten" class="px-3 py-2 text-center cursor-pointer select-none hover:text-white">Pēd.10</th>
+              <th data-sort="streak" class="px-3 py-2 text-center cursor-pointer select-none hover:text-white">Sērija</th>
+              <th data-sort="clincher" class="px-3 py-2 text-center cursor-pointer select-none hover:text-white">Apzīm.</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-[#374151] text-[#F3F4F6]">
@@ -155,11 +155,11 @@
         </table>
       </div>
 
-      <p class="px-4 pb-4 pt-2 text-xs text-gray-400 sm:hidden">Tip: swipe sideways to see all columns.</p>
+      <p class="px-4 pb-4 pt-2 text-xs text-gray-400 sm:hidden">Padoms: velciet uz sāniem, lai redzētu visas kolonnas.</p>
     </section>
 
 <section class="pb-8">
-  <h2 class="text-xl sm:text-2xl font-semibold mb-3">Stat explanations</h2>
+  <h2 class="text-xl sm:text-2xl font-semibold mb-3">Statistikas skaidrojumi</h2>
   <div class="grid gap-3 sm:gap-4 [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]">
     @foreach($legend as $item)
       <div class="bg-[#1f2937] border border-[#374151] rounded-xl p-3">
@@ -170,20 +170,21 @@
   </div>
 
   @php
-    // If controller didn't pass $clincherLegend, use sensible defaults here.
-    $clincherLegend = $clincherLegend ?? [
-      ['*',  'Best record in league',     'bg-amber-500/20 text-amber-300 border-amber-500/30'],
-      ['Z',  'Best record in conference', 'bg-purple-500/20 text-purple-300 border-purple-500/30'],
-      ['Y',  'Clinched division title',   'bg-teal-500/20 text-teal-300 border-teal-500/30'],
-      ['X',  'Clinched playoff berth',    'bg-green-500/20 text-green-300 border-green-500/30'],
-      ['PB', 'Clinched Play-In',          'bg-blue-500/20 text-blue-300 border-blue-500/30'],
-      ['PI', 'Play-In eligible',          'bg-blue-500/20 text-blue-300 border-blue-500/30'],
-      ['E',  'Eliminated from playoffs',  'bg-red-500/20 text-red-300 border-red-500/30'],
-    ];
-  @endphp
+  // If the controller doesn't provide $clincherLegend, use default values.
+  $clincherLegend = $clincherLegend ?? [
+    ['*',  'Labākais rekords līgā',            'bg-amber-500/20 text-amber-300 border-amber-500/30'],
+    ['Z',  'Labākais rekords konforencē',        'bg-purple-500/20 text-purple-300 border-purple-500/30'],
+    ['Y',  'Iegūts divīzijas tituls',          'bg-teal-500/20 text-teal-300 border-teal-500/30'],
+    ['X',  'Nodrošināta vieta play-off',           'bg-green-500/20 text-green-300 border-green-500/30'],
+    ['PB', 'Nodrošināts Play-In',                 'bg-blue-500/20 text-blue-300 border-blue-500/30'],
+    ['PI', 'Tiesīga piedalīties Play-In',                 'bg-blue-500/20 text-blue-300 border-blue-500/30'],
+    ['E',  'Izslēgta no play-off','bg-red-500/20 text-red-300 border-red-500/30'],
+  ];
+@endphp
+
 
   <div class="mt-6">
-    <h3 class="text-lg font-semibold mb-2">Clincher codes</h3>
+    <h3 class="text-lg font-semibold mb-2">Apzīmējumu kodi</h3>
     <div class="grid gap-3 sm:gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
       @foreach($clincherLegend as [$code, $label, $cls])
         <div class="bg-[#1f2937] border border-[#374151] rounded-xl p-3 flex items-center gap-3">
@@ -256,9 +257,9 @@
 
     const selBoxes   = document.querySelectorAll('.rowSel');
     const compareBtn = document.getElementById('compareBtn');
-    const clearSelBtn= document.getElementById('clearSelBtn');
-    const compareArea= document.getElementById('compareArea');
-    const compareGrid= document.getElementById('compareGrid');
+    theClearBtn = document.getElementById('clearSelBtn');
+    const compareArea = document.getElementById('compareArea');
+    const compareGrid = document.getElementById('compareGrid');
 
     function selectedPayloads() {
       return Array.from(selBoxes)
@@ -275,7 +276,7 @@
       });
     });
 
-    clearSelBtn.addEventListener('click', () => {
+    theClearBtn.addEventListener('click', () => {
       selBoxes.forEach(x => x.checked = false);
       compareBtn.disabled = true;
       compareGrid.innerHTML = '';
@@ -298,8 +299,8 @@
         else if (higherIsBetter) behindPct = ((leader - v) / Math.abs(leader)) * 100;
         else behindPct = ((v - leader) / Math.abs(leader)) * 100;
 
-        if (Math.abs(behindPct) < 0.5) return { label: 'Leader', cls: 'text-[#84CC16]' };
-        return { label: `-${Math.round(behindPct)}% vs leader`, cls: 'text-[#F97316]' };
+        if (Math.abs(behindPct) < 0.5) return { label: 'Līderis', cls: 'text-[#84CC16]' };
+        return { label: `-${Math.round(behindPct)}% pret līderi`, cls: 'text-[#F97316]' };
       });
     }
 
@@ -317,7 +318,7 @@
       compareGrid.innerHTML = sel.map((p, idx) => {
         const winPct   = (p.win_percent ?? null) !== null ? `${Math.round(Number(p.win_percent) * 100)}%` : '—';
         const diffTxt  = (p.diff ?? null) === null ? '—' : (p.diff >= 0 ? ('+'+p.diff) : p.diff);
-        const streakTxt= (p.streak ?? null) === null ? '—' : (p.streak > 0 ? 'W'+p.streak : (p.streak < 0 ? 'L'+Math.abs(p.streak) : '—'));
+        const streakTxt= (p.streak ?? null) === null ? '—' : (p.streak > 0 ? 'U'+p.streak : (p.streak < 0 ? 'Z'+Math.abs(p.streak) : '—'));
         const logoImg  = p.logo
           ? `<img src="${p.logo}" alt="${p.team} logo" class="h-6 w-6 object-contain rounded bg-white p-[2px]" />`
           : `<span class="inline-flex items-center justify-center h-6 w-6 rounded bg-white/10 text-[10px]">${p.abbr ?? '—'}</span>`;
@@ -334,17 +335,17 @@
 
             <div class="grid grid-cols-3 gap-3 text-sm">
               <div>
-                <div class="text-[#F3F4F6]/60 text-xs">W/L</div>
+                <div class="text-[#F3F4F6]/60 text-xs">U/Z</div>
                 <div class="font-semibold">${p.wins ?? '—'}–${p.losses ?? '—'}</div>
                 ${lineLeader(cmpWin[idx])}
               </div>
               <div>
-                <div class="text-[#F3F4F6]/60 text-xs">Win%</div>
+                <div class="text-[#F3F4F6]/60 text-xs">Uzv.%</div>
                 <div class="font-semibold">${winPct}</div>
                 ${lineLeader(cmpWin[idx])}
               </div>
               <div>
-                <div class="text-[#F3F4F6]/60 text-xs">Seed</div>
+                <div class="text-[#F3F4F6]/60 text-xs">Sēkla</div>
                 <div class="font-semibold">${p.seed ?? '—'}</div>
               </div>
               <div>
@@ -353,23 +354,23 @@
                 ${lineLeader(cmpPPG[idx])}
               </div>
               <div>
-                <div class="text-[#F3F4F6]/60 text-xs">OPP PPG</div>
+                <div class="text-[#F3F4F6]/60 text-xs">Pretinieku PPG</div>
                 <div class="font-semibold">${p.opp_ppg ?? '—'}</div>
                 ${lineLeader(cmpOPP[idx])}
               </div>
               <div>
-                <div class="text-[#F3F4F6]/60 text-xs">Diff</div>
+                <div class="text-[#F3F4F6]/60 text-xs">Starpl.</div>
                 <div class="font-semibold ${p.diff==null?'':(p.diff>=0?'text-[#84CC16]':'text-[#F97316]')}">${diffTxt}</div>
                 ${lineLeader(cmpDiff[idx])}
               </div>
             </div>
 
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
-              <span class="px-2.5 py-1 rounded-full bg-white/5 border border-white/10">Home: ${p.home ?? '—'}</span>
-              <span class="px-2.5 py-1 rounded-full bg-white/5 border border-white/10">Road: ${p.road ?? '—'}</span>
-              <span class="px-2.5 py-1 rounded-full bg-white/5 border border-white/10">L10: ${p.l10 ?? '—'}</span>
-              <span class="px-2.5 py-1 rounded-full bg-white/5 border border-white/10">Streak: ${streakTxt}</span>
-              ${p.clincher_human ? `<span class="px-2.5 py-1 rounded-full bg-white/5 border border-white/10">Clincher: ${p.clincher_human}</span>` : ''}
+              <span class="px-2.5 py-1 rounded-full bg-white/5 border border-white/10">Mājās: ${p.home ?? '—'}</span>
+              <span class="px-2.5 py-1 rounded-full bg-white/5 border border-white/10">Izbraukumā: ${p.road ?? '—'}</span>
+              <span class="px-2.5 py-1 rounded-full bg-white/5 border border-white/10">Pēd.10: ${p.l10 ?? '—'}</span>
+              <span class="px-2.5 py-1 rounded-full bg-white/5 border border-white/10">Sērija: ${streakTxt}</span>
+              ${p.clincher_human ? `<span class="px-2.5 py-1 rounded-full bg-white/5 border border-white/10">Apzīm.: ${p.clincher_human}</span>` : ''}
             </div>
           </article>
         `;

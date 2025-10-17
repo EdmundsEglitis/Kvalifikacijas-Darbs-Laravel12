@@ -252,12 +252,12 @@ public function compare(Request $request)
         'playerQuery' => $playerQuery,
         'rows'        => $paginator,
         'legend'      => [
-            ['W/L','Team record in games the player appeared.'],
-            ['PPG / RPG / APG','Points / Rebounds / Assists per game.'],
-            ['SPG / BPG','Steals / Blocks per game.'],
-            ['TOV','Turnovers per game (lower is better).'],
-            ['MPG','Minutes per game.'],
-            ['FG% / 3P% / FT%','Shooting percentages (averaged from logs).'],
+            ['U/Z', 'Komandas bilance spēlēs, kurās spēlētājs piedalījās.'],
+            ['PPG / RPG / APG', 'Punkti / Atlēkušās bumbas / Rezultativās piespēles vidēji spēlē.'],
+            ['SPG / BPG', 'Pārtvertās bumbas / Bloki vidēji spēlē.'],
+            ['TOV', 'Kļūdas vidēji spēlē (jo mazāk, jo labāk).'],
+            ['MPG', 'Minūtes vidēji spēlē.'],
+            ['FG% / 3P% / FT%', 'Metienu precizitāte (aprēķināta no žurnālu ierakstiem).'],
         ],
     ]);
 }

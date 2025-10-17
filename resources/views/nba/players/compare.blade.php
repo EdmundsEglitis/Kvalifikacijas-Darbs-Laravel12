@@ -1,5 +1,5 @@
 @extends('layouts.nba')
-@section('title','Players Explorer & Compare')
+@section('title','Spēlētāju pārlūks un salīdzināšana')
 
 @push('head')
 <style>
@@ -20,7 +20,7 @@
   <section class="bg-[#1f2937] border border-[#374151] rounded-2xl p-4 sm:p-5 fade-up">
     <form method="GET" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-6 items-end">
       <div>
-        <label class="block text-xs text-gray-400 mb-1">From season</label>
+        <label class="block text-xs text-gray-400 mb-1">No sezonas</label>
         <select name="from" class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40">
           @foreach($seasons as $s)
             <option value="{{ $s }}" {{ (int)$from === (int)$s ? 'selected' : '' }}>{{ $s }}</option>
@@ -28,7 +28,7 @@
         </select>
       </div>
       <div>
-        <label class="block text-xs text-gray-400 mb-1">To season</label>
+        <label class="block text-xs text-gray-400 mb-1">Līdz sezonai</label>
         <select name="to" class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40">
           @foreach($seasons as $s)
             <option value="{{ $s }}" {{ (int)$to === (int)$s ? 'selected' : '' }}>{{ $s }}</option>
@@ -36,25 +36,25 @@
         </select>
       </div>
       <div class="lg:col-span-2">
-        <label class="block text-xs text-gray-400 mb-1">Team (name or abbr.)</label>
-        <input name="team" value="{{ $teamQuery }}" placeholder="e.g. BOS or Celtics"
+        <label class="block text-xs text-gray-400 mb-1">Komanda (nosaukums vai saīsinājums)</label>
+        <input name="team" value="{{ $teamQuery }}" placeholder="piem., BOS vai Celtics"
                class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40" />
       </div>
       <div class="lg:col-span-2">
-        <label class="block text-xs text-gray-400 mb-1">Player</label>
-        <input name="player" value="{{ $playerQuery }}" placeholder="Player name"
+        <label class="block text-xs text-gray-400 mb-1">Spēlētājs</label>
+        <input name="player" value="{{ $playerQuery }}" placeholder="Spēlētāja vārds"
                class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40" />
       </div>
 
       <div class="flex flex-col gap-3 lg:col-span-6 sm:flex-row">
         <button class="px-4 py-2 rounded-lg bg-[#84CC16] text-[#111827] font-semibold hover:bg-[#a3e635] transition focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40">
-          Apply
+          Piemērot
         </button>
         <a href="{{ route('nba.compare') }}"
            class="px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition focus:outline-none focus:ring-2 focus:ring-white/30">
-          Reset
+          Atiestatīt
         </a>
-        <input id="q" type="text" placeholder="Quick search the players in this page"
+        <input id="q" type="text" placeholder="Ātrā meklēšana šīs lapas spēlētājos"
                class="flex-1 min-w-[200px] bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40" />
 
       </div>
@@ -63,16 +63,16 @@
 
   <section class="bg-[#1f2937] border border-[#374151] rounded-2xl p-4 sm:p-5 fade-up-delayed">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <div class="text-sm text-gray-300">Select rows (checkbox) to compare (up to 5).</div>
+      <div class="text-sm text-gray-300">Atlasiet rindas (atzīme) salīdzināšanai (līdz 5).</div>
       <div class="flex gap-2">
         <button id="compareBtn"
-                class="px-3 py-2 rounded-lg bg_white/10 bg-white/10 text-white hover:bg-white/20 transition disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-white/30"
+                class="px-3 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-white/30"
                 disabled>
-          Compare selected
+          Salīdzināt atlasītās
         </button>
         <button id="clearSelBtn"
                 class="px-3 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition focus:outline-none focus:ring-2 focus:ring-white/30">
-          Clear selection
+          Notīrīt atlasi
         </button>
       </div>
     </div>
@@ -85,7 +85,7 @@
     </div>
 
     <div id="compareArea" class="mt-4 hidden">
-      <h3 class="text-white font-semibold mb-3">Comparison</h3>
+      <h3 class="text-white font-semibold mb-3">Salīdzinājums</h3>
       <div id="compareGrid" class="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(240px,1fr))]"></div>
     </div>
   </section>
@@ -96,6 +96,7 @@
     </div>
   @endif
 
+  {{-- Karte mobilajām ierīcēm --}}
   <section class="sm:hidden space-y-3">
     @forelse($rows as $r)
       <article class="bg-[#1f2937] border border-[#374151] rounded-2xl p-4 fade-up hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/20 transition">
@@ -113,7 +114,7 @@
           </div>
           <label class="shrink-0 inline-flex items-center gap-2 text-xs">
             <input type="checkbox" class="rowSel accent-[#84CC16]" data-payload='{{ $r['payload'] }}'>
-            <span class="text-gray-300">Compare</span>
+            <span class="text-gray-300">Salīdzināt</span>
           </label>
         </div>
 
@@ -129,7 +130,7 @@
         <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-300">
           <span>G: {{ $r['games'] }}</span>
           <span>•</span>
-          <span>W/L: {{ $r['wl_text'] }}</span>
+          <span>U/Z: {{ $r['wl_text'] }}</span>
           <span>•</span>
           <span>FG: {{ $r['fg_pct'] }}</span>
           <span>3P: {{ $r['tp_pct'] }}</span>
@@ -137,21 +138,22 @@
         </div>
       </article>
     @empty
-      <div class="text-gray-400">No results.</div>
+      <div class="text-gray-400">Nav rezultātu.</div>
     @endforelse
   </section>
 
+  {{-- Tabula (≥ sm) --}}
   <section class="hidden sm:block bg-[#1f2937] border border-[#374151] rounded-2xl overflow-hidden fade-up">
     <div class="overflow-x-auto will-change-transform">
       <table id="playersTable" class="min-w-[1100px] w-full text-sm">
         <thead class="bg-[#0f172a] text-gray-300 sticky top-0 z-10">
           <tr>
             <th class="px-3 py-2 w-10"></th>
-            <th data-sort="season" class="px-3 py-2 cursor-pointer select-none hover:text-white">Season</th>
-            <th class="px-3 py-2 text-left">Player</th>
-            <th class="px-3 py-2 text-left">Team</th>
+            <th data-sort="season" class="px-3 py-2 cursor-pointer select-none hover:text-white">Sezona</th>
+            <th class="px-3 py-2 text-left">Spēlētājs</th>
+            <th class="px-3 py-2 text-left">Komanda</th>
             <th data-sort="games" class="px-3 py-2 text-right cursor-pointer select-none hover:text-white">G</th>
-            <th class="px-3 py-2 text-right">W/L</th>
+            <th class="px-3 py-2 text-right">U/Z</th>
             <th data-sort="ppg" class="px-3 py-2 text-right cursor-pointer select-none hover:text-white">PPG</th>
             <th data-sort="rpg" class="px-3 py-2 text-right cursor-pointer select-none hover:text-white">RPG</th>
             <th data-sort="apg" class="px-3 py-2 text-right cursor-pointer select-none hover:text-white">APG</th>
@@ -217,7 +219,7 @@
   @endif
 
   <section class="pb-8 fade-up">
-    <h2 class="text-xl sm:text-2xl font-semibold mb-3">Stat explanations</h2>
+    <h2 class="text-xl sm:text-2xl font-semibold mb-3">Statistikas skaidrojumi</h2>
     <div class="grid gap-3 sm:gap-4 [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]">
       @foreach($legend as $item)
         <div class="bg-[#1f2937] border border-[#374151] rounded-xl p-3 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20 transition">
@@ -317,8 +319,8 @@
       if (leader === 0) behindPct = 0;
       else if (higherIsBetter) behindPct = ((leader - v) / Math.abs(leader)) * 100;
       else behindPct = ((v - leader) / Math.abs(leader)) * 100;
-      if (Math.abs(behindPct) < 0.5) return {label:'Leader', cls:'text-[#84CC16]'};
-      return {label:`-${Math.round(behindPct)}% vs leader`, cls:'text-[#F97316]'};
+      if (Math.abs(behindPct) < 0.5) return {label:'Līderis', cls:'text-[#84CC16]'};
+      return {label:`-${Math.round(behindPct)}% pret līderi`, cls:'text-[#F97316]'};
     });
   }
   const line = (c) => `<div class="text-xs mt-0.5 ${c.cls}">${c.label}</div>`;
@@ -375,7 +377,7 @@
               <div><div class="text-[#F3F4F6]/60 text-xs">FT%</div><div class="font-semibold">${pct(p.ft_pct)}</div>${line(cmpFT[i])}</div>
             </div>
 
-            <div class="mt-3 text-xs text-gray-300">G: ${p.games} • W/L: ${p.wins ?? '—'}–${p.losses ?? '—'}</div>
+            <div class="mt-3 text-xs text-gray-300">G: ${p.games} • U/Z: ${p.wins ?? '—'}–${p.losses ?? '—'}</div>
           </article>
         `;
       }).join('');

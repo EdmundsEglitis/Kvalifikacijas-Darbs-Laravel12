@@ -52,13 +52,14 @@ class StandingsController extends Controller
             if ($raw === '') return [];
 
             $map = [
-                'z'  => ['Best record in conference', 'bg-purple-500/20 text-purple-300 border-purple-500/30'],
-                '*'  => ['Best record in league',     'bg-amber-500/20 text-amber-300 border-amber-500/30'],
-                'y'  => ['Clinched division title',   'bg-teal-500/20 text-teal-300 border-teal-500/30'],
-                'x'  => ['Clinched playoff berth',    'bg-green-500/20 text-green-300 border-green-500/30'],
-                'pb' => ['Clinched Play-In',          'bg-blue-500/20 text-blue-300 border-blue-500/30'],
-                'pi' => ['Play-In eligible',          'bg-blue-500/20 text-blue-300 border-blue-500/30'],
-                'e'  => ['Eliminated from playoffs',  'bg-red-500/20 text-red-300 border-red-500/30'],
+                'z'  => ['Labākā konferencē', 'bg-purple-500/20 text-purple-300 border-purple-500/30'],
+                '*'  => ['Labākā līgā',       'bg-amber-500/20 text-amber-300 border-amber-500/30'],
+                'y'  => ['Iegūts divīzijas tituls',   'bg-teal-500/20 text-teal-300 border-teal-500/30'],
+                'x'  => ['Nodrošināta vieta play-off', 'bg-green-500/20 text-green-300 border-green-500/30'],
+                'pb' => ['Nodrošināts Play-In',       'bg-blue-500/20 text-blue-300 border-blue-500/30'],
+                'pi' => ['Tiesīga piedalīties Play-In','bg-blue-500/20 text-blue-300 border-blue-500/30'],
+                'e'  => ['Izslēgta no play-off',      'bg-red-500/20 text-red-300 border-red-500/30'],
+
             ];
 
             $tokens = [];
@@ -163,17 +164,17 @@ class StandingsController extends Controller
             'teamQuery'  => $teamQuery,
             'rows'       => $rows,
             'legend'     => [
-                ['Record',     'Wins–Losses for the season.'],
-                ['Win%',       'Winning percentage (wins ÷ total games).'],
-                ['Seed',       'Projected/Final playoff seed.'],
-                ['GB',         'Games behind the conference/league leader.'],
-                ['PPG',        'Average points scored per game.'],
-                ['OPP PPG',    'Average points allowed per game.'],
-                ['Diff',       'Points For − Points Against (total).'],
-                ['Home/Road',  'Win–loss records at home and away.'],
-                ['L10',        'Record in the last 10 games.'],
-                ['Streak',     'Current win or loss streak.'],
-                ['Clincher',   'Status markers like x, y, z, pb, e.'],
+                ['Bilance',      'Uzvaras–Zaudējumi sezonā.'],
+                ['Uzv.%',        'Uzvaru procents (uzvaras ÷ kopējās spēles).'],
+                ['Sēkla',        'Prognozētā/galīgā izslēgšanas spēļu sēkla.'],
+                ['GB',           'Spēles atpaliek no konferences/līgas līdera.'],
+                ['PPG',          'Vidējais gūto punktu skaits spēlē.'],
+                ['Pret. PPG',    'Vidējais ielaisto (pretinieku) punktu skaits spēlē.'],
+                ['Starpl.',      'Gūtie punkti − Ielaistie punkti (kopā).'],
+                ['Mājās/Izbr.',  'Uzvaru–zaudējumu bilance mājās un izbraukumā.'],
+                ['Pēd.10',       'Bilance pēdējās 10 spēlēs.'],
+                ['Sērija',       'Pašreizējā uzvaru vai zaudējumu sērija.'],
+                ['Apzīmējums',   'Statusa marķieri, piemēram, x, y, z, pb, e.'],
             ],
         ]);
     }

@@ -36,14 +36,14 @@
 
       {{-- LBS desktop menu spacing (no text-sm wrapper; font-weight on links) --}}
       <div class="hidden md:flex items-center gap-8">
-        {!! $link('nba.players', 'Players') !!}
-        {!! $link('nba.games.upcoming', 'Upcoming Games', 'nba.games.upcoming') !!}
+        {!! $link('nba.players', 'Spēlētāji') !!}
+        {!! $link('nba.games.upcoming', 'Tuvākās spēles', 'nba.games.upcoming') !!}
         @if (Route::has('nba.games.all'))
-          {!! $link('nba.games.all', 'All Games', 'nba.games.all') !!}
+          {!! $link('nba.games.all', 'Visas spēles', 'nba.games.all') !!}
         @endif
-        {!! $link('nba.teams', 'Teams') !!}
-        {!! $link('nba.standings.explorer', 'Compare teams') !!}
-        {!! $link('nba.compare', 'Compare players') !!}
+        {!! $link('nba.teams', 'Komandas') !!}
+        {!! $link('nba.standings.explorer', 'Salīdzināt komandas') !!}
+        {!! $link('nba.compare', 'Salīdzināt spēlētājus') !!}
       </div>
 
       {{-- LBS-style mobile toggle button (kept NBA IDs) --}}

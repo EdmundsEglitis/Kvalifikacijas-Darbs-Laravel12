@@ -61,7 +61,7 @@
 
     <header class="space-y-2 fade-up" style="animation-delay:60ms">
       <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Izvēlies sadaļu</h1>
-      <p class="text-sm text-gray-400">Ātrā piekļuve NBA un LBS, jaunākās ziņas un šodienas formā spēlētāji.</p>
+      <p class="text-sm text-gray-400">Ātrā piekļuve NBA un LBS informācijai</p>
     </header>
 
     <section class="grid grid-cols-1 sm:grid-cols-2 gap-5 reveal" data-aos data-aos-delay="100">
@@ -242,7 +242,7 @@
                 @endif
               </a>
               <div>
-                <div class="text-xs text-gray-400">Labākais Overall</div>
+                <div class="text-xs text-gray-400">Vispārīgi labākais</div>
                 <a
                   href="{{ isset($bestOverall->player_id)
                             ? route('nba.player.show', $bestOverall->player_id)
@@ -275,7 +275,7 @@
                 @endif
               </a>
               <div class="text-right">
-                <div class="text-xs text-gray-400">Zemākais Overall*</div>
+                <div class="text-xs text-gray-400">Vispārīgi sliktākais</div>
                 <a
                   href="{{ isset($worstOverall->player_id)
                             ? route('nba.player.show', $worstOverall->player_id)

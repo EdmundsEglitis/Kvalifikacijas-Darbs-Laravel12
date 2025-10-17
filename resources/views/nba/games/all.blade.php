@@ -1,5 +1,5 @@
 @extends('layouts.nba')
-@section('title','All Games')
+@section('title','Visas spēles')
 
 @push('head')
 <style>
@@ -11,7 +11,7 @@
   .shimmer { background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.12) 37%, rgba(255,255,255,0.06) 63%);
              background-size: 400% 100%; animation: shimmer 1.6s infinite; }
 
-  /* make headers obviously clickable */
+  /* galvenes padarām acīmredzami klikšķināmas */
   th.sortable { cursor: pointer; user-select: none; }
   th.sortable .arrow { display:inline-block; width:1ch; margin-left:.35rem; opacity:.65; }
 </style>
@@ -20,11 +20,11 @@
 @section('content')
 <main class="max-w-7xl mx-auto px-4 pb-16 pt-10 space-y-8">
 
-  {{-- Filters --}}
+  {{-- Filtri --}}
   <section class="bg-[#1f2937] border border-[#374151] rounded-2xl p-4 sm:p-5 fade-up">
     <form method="GET" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-7 items-end">
       <div>
-        <label class="block text-xs text-gray-400 mb-1">From season</label>
+        <label class="block text-xs text-gray-400 mb-1">No sezonas</label>
         <select name="from" class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40">
           @foreach($seasons as $s)
             <option value="{{ $s }}" @selected((int)$from === (int)$s)>{{ $s }}</option>
@@ -33,7 +33,7 @@
       </div>
 
       <div>
-        <label class="block text-xs text-gray-400 mb-1">To season</label>
+        <label class="block text-xs text-gray-400 mb-1">Līdz sezonai</label>
         <select name="to" class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40">
           @foreach($seasons as $s)
             <option value="{{ $s }}" @selected((int)$to === (int)$s)>{{ $s }}</option>
@@ -42,19 +42,19 @@
       </div>
 
       <div class="lg:col-span-2">
-        <label class="block text-xs text-gray-400 mb-1">Team / Opponent / Player</label>
-        <input name="team" value="{{ $teamQuery }}" placeholder="e.g. Celtics or Tatum"
+        <label class="block text-xs text-gray-400 mb-1">Komanda / Pretinieks / Spēlētājs</label>
+        <input name="team" value="{{ $teamQuery }}" placeholder="piem., Celtics vai Tatum"
                class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40" />
       </div>
 
       <div class="lg:col-span-2">
-        <label class="block text-xs text-gray-400 mb-1">Winner contains</label>
-        <input name="winner" value="{{ $winnerQ ?? '' }}" placeholder="e.g. Celtics"
+        <label class="block text-xs text-gray-400 mb-1">Uzvarētājs satur</label>
+        <input name="winner" value="{{ $winnerQ ?? '' }}" placeholder="piem., Celtics"
                class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40" />
       </div>
 
       <div>
-        <label class="block text-xs text-gray-400 mb-1">Per page</label>
+        <label class="block text-xs text-gray-400 mb-1">Rindu skaits lapā</label>
         <select name="per_page" class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40">
           @foreach([10,25,50,100] as $pp)
             <option value="{{ $pp }}" @selected((int)$per === $pp)>{{ $pp }}</option>
@@ -63,27 +63,27 @@
       </div>
 
       <div class="flex gap-3 lg:col-span-7">
-        <button class="px-4 py-2 rounded-lg bg-[#84CC16] text-[#111827] font-semibold hover:bg-[#a3e635] transition">Apply</button>
+        <button class="px-4 py-2 rounded-lg bg-[#84CC16] text-[#111827] font-semibold hover:bg-[#a3e635] transition">Piemērot</button>
         <a href="{{ route('nba.games.all') }}"
-           class="px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition">Reset</a>
-        <input id="q" type="text" placeholder="Quick search in this page…"
+           class="px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition">Atiestatīt</a>
+        <input id="q" type="text" placeholder="Ātrā meklēšana šajā lapā…"
                class="flex-1 min-w-[200px] bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40" />
       </div>
     </form>
   </section>
 
-  {{-- Table --}}
+  {{-- Tabula --}}
   <section class="bg-[#1f2937] border border-[#374151] rounded-2xl overflow-hidden fade-up">
     <div class="overflow-x-auto">
       <table id="gamesTable" class="min-w-[1000px] w-full text-sm">
         <thead class="bg-[#0f172a] text-gray-300 sticky top-0 z-10">
           <tr>
-            <th class="px-4 py-2 text-left">Date / Time</th>
-            <th class="px-4 py-2 text-left">Home (derived)</th>
-            <th class="px-4 py-2 text-left">Away (derived)</th>
-            <th class="px-4 py-2 text-left">Score</th>
-            <th class="px-4 py-2 text-left">Winner</th>
-            <th class="px-4 py-2 text-right">Box</th>
+            <th class="px-4 py-2 text-left">Datums / Laiks</th>
+            <th class="px-4 py-2 text-left">Mājinieki</th>
+            <th class="px-4 py-2 text-left">Viesi</th>
+            <th class="px-4 py-2 text-left">Rezultāts</th>
+            <th class="px-4 py-2 text-left">Uzvarētājs</th>
+            <th class="px-4 py-2 text-right">Statistika</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-[#374151] text-[#F3F4F6]">
@@ -130,12 +130,12 @@
               <td class="px-4 py-2 text-right">
                 <a href="{{ route('nba.games.show', $r['event_id']) }}"
                    class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20">
-                  Open →
+                  Atvērt →
                 </a>
               </td>
             </tr>
           @empty
-            <tr><td colspan="6" class="px-4 py-4 text-center text-gray-400">No games found.</td></tr>
+            <tr><td colspan="6" class="px-4 py-4 text-center text-gray-400">Spēles nav atrastas.</td></tr>
           @endforelse
         </tbody>
       </table>
@@ -149,7 +149,7 @@
   @endif
 
   <section class="pb-8 fade-up">
-    <h2 class="text-xl sm:text-2xl font-semibold mb-3">Stat explanations</h2>
+    <h2 class="text-xl sm:text-2xl font-semibold mb-3">Statistikas skaidrojumi</h2>
     <div class="grid gap-3 sm:gap-4 [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]">
       @foreach($legend as $item)
         <div class="bg-[#1f2937] border border-[#374151] rounded-xl p-3 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20 transition">
@@ -170,7 +170,7 @@
 
   const rows = () => Array.from(tbody.querySelectorAll('tr'));
 
-  // -------- quick search (your original code) --------
+  // -------- ātrā meklēšana --------
   const clearMarks = (el) => {
     el.querySelectorAll('mark[data-hi]').forEach(m => {
       const t = document.createTextNode(m.textContent);
@@ -219,66 +219,50 @@
       });
     }, 160);
   });
-  // -------- end quick search --------
+  // -------- beigas --------
 
-  // -------- sorting helpers --------
-  /** best-effort date parser supporting common formats */
+  // -------- kārtošanas palīgfunkcijas --------
   function parseDateLike(text) {
     const s = text.trim()
-      .replace(/\u2013|\u2014/g, '-')   // normalize en/em dash just in case
-      .replace(/(\d{1,2})\.(\d{1,2})\.(\d{4})(.*)?/, '$3-$2-$1$4'); // dd.mm.yyyy -> yyyy-mm-dd
+      .replace(/\u2013|\u2014/g, '-')   // normalizē domuzīmes
+      .replace(/(\d{1,2})\.(\d{1,2})\.(\d{4})(.*)?/, '$3-$2-$1$4'); // dd.mm.gggg -> gggg-mm-dd
     const ts = Date.parse(s);
     return isNaN(ts) ? null : ts;
   }
 
-  /** extract a comparable sort key from a cell */
   function sortKey(td, colIndex) {
     const text = td?.innerText?.trim() || '';
 
-    // Col 0 = Date/Time
-    if (colIndex === 0) {
+    if (colIndex === 0) { // Datums/Laiks
       const ts = parseDateLike(text);
       return ts !== null ? ts : text.toLowerCase();
     }
-
-    // Col 1 & 2 = Team cells (text inside)
-    if (colIndex === 1 || colIndex === 2) {
+    if (colIndex === 1 || colIndex === 2) { // komandas
       return text.toLowerCase();
     }
-
-    // Col 3 = Score like "110–100" or "110-100"
-    if (colIndex === 3) {
+    if (colIndex === 3) { // Rezultāts "110–100"
       const m = text.replace(/\s/g,'').match(/(\d+)[^\d]+(\d+)/);
       if (m) {
         const a = parseInt(m[1], 10), b = parseInt(m[2], 10);
-        // return an array-like key; we’ll compare totals then diff
         return [a + b, a - b];
       }
       return [0, 0];
     }
-
-    // Col 4 = Winner (badge text) — sort by text
-    if (colIndex === 4) return text.toLowerCase();
-
-    // Col 5 = Box (button) — sort by href text so it’s stable
-    if (colIndex === 5) {
+    if (colIndex === 4) return text.toLowerCase(); // Uzvarētājs
+    if (colIndex === 5) { // Statistika saite
       const a = td.querySelector('a');
       return a ? (a.getAttribute('href') || '').toLowerCase() : text.toLowerCase();
     }
-
-    // Fallback: numeric if possible, else lowercase text
     const num = Number(text.replace(/[^0-9.+-]/g, ''));
     return Number.isFinite(num) ? num : text.toLowerCase();
   }
 
   function compareKeys(a, b) {
-    // support tuple-like keys for score
     const arrA = Array.isArray(a) ? a : [a];
     const arrB = Array.isArray(b) ? b : [b];
     for (let i = 0; i < Math.max(arrA.length, arrB.length); i++) {
       const x = arrA[i], y = arrB[i];
       if (x === y) continue;
-      // Handle string vs number seamlessly
       if (typeof x === 'number' && typeof y === 'number') return x - y;
       return ('' + x).localeCompare('' + y, undefined, { numeric: true, sensitivity: 'base' });
     }
@@ -300,14 +284,13 @@
     const headCells = Array.from(table.tHead.rows[0].cells);
 
     headCells.forEach((th, i) => {
-      // Skip sorting for the "Box" column (rightmost)
+      // izlaižam pēdējo kolonnu "Statistika"
       if (i === headCells.length - 1) return;
 
       th.classList.add('sortable');
       th.setAttribute('tabindex', '0');
       th.setAttribute('aria-sort', 'none');
 
-      // add a little arrow container (↕ / ▲ / ▼)
       const arrow = document.createElement('span');
       arrow.className = 'arrow';
       arrow.textContent = '↕';
@@ -324,13 +307,12 @@
           return dir === 'asc' ? cmp || (A.idx - B.idx) : -cmp || (A.idx - B.idx);
         });
 
-        // re-append (this preserves nodes for existing event listeners/marks)
         const frag = document.createDocumentFragment();
         data.forEach(x => frag.appendChild(x.tr));
         tbody.appendChild(frag);
       };
 
-      let current = 'none'; // none | asc | desc
+      let current = 'none';
 
       const toggle = () => {
         const next = current === 'asc' ? 'desc' : 'asc';

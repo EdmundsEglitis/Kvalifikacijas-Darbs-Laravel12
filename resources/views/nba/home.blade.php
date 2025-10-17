@@ -274,7 +274,7 @@
     @if($standings->isNotEmpty())
       <section class="reveal">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-2xl font-bold text-white accent-underline">Standings Snapshot ({{ $latestSeason }})</h2>
+          <h2 class="text-2xl font-bold text-white accent-underline">({{ $latestSeason }}) Gada statistika</h2>
           <a href="{{ route('nba.standings.explorer') }}" class="text-[#84CC16] font-medium hover:underline">Atvērt pārlūku →</a>
         </div>
 
