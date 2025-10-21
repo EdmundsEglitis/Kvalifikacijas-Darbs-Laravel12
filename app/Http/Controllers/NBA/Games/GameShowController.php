@@ -11,21 +11,22 @@ class GameShowController extends Controller
     public function show(int $eventId)
     {
         $payload = Cache::remember("nba_game:$eventId", 3600, function () use ($eventId) {
-            // Pull ALL player lines for this event (no limits)
             $rows = DB::table('nba_player_game_logs as l')
                 ->leftJoin('nba_players as p', 'p.external_id', '=', 'l.player_external_id')
+                ->leftJoin('nba_teams   as t', 't.external_id', '=', 'p.team_id')
                 ->where('l.event_id', $eventId)
                 ->select([
                     'l.event_id',
                     'l.game_date',
-                    'l.result',        // 'W' or 'L' from player's perspective
+                    'l.result',        // 'W' / 'L'
                     'l.score',
                     'l.opponent_name',
                     'l.opponent_logo',
 
-                    'p.external_id as player_id',
+                    'p.external_id as player_id', // <-- will be used for route('nba.player.show', ['player' => ...])
                     DB::raw("TRIM(CONCAT(COALESCE(p.first_name,''),' ',COALESCE(p.last_name,''))) as player_name"),
                     'p.image as headshot',
+                    'p.team_id as player_team_id',
 
                     'l.minutes',
                     'l.fg', 'l.fg_pct',
@@ -33,34 +34,26 @@ class GameShowController extends Controller
                     'l.ft', 'l.ft_pct',
                     'l.rebounds', 'l.assists', 'l.steals', 'l.blocks', 'l.turnovers', 'l.fouls', 'l.points',
                 ])
-                ->orderByDesc('l.points') // just a presentational default
+                ->orderByDesc('l.points')
                 ->get();
 
-            if ($rows->isEmpty()) {
-                return null;
-            }
+            if ($rows->isEmpty()) return null;
 
-            // Split strictly by game result — this is stable for a single event
             $byResult = $rows->groupBy(fn($r) => strtoupper(trim((string)$r->result)) === 'W' ? 'W' : 'L');
+            $W = $byResult->get('W', collect());
+            $L = $byResult->get('L', collect());
 
-            $W = $byResult->get('W', collect()); // winning team rows
-            $L = $byResult->get('L', collect()); // losing team rows
-
-            // Fallback: if something odd, just split the set into two halves
             if ($W->isEmpty() || $L->isEmpty()) {
                 $half = (int) ceil($rows->count() / 2);
                 $W = $rows->slice(0, $half);
                 $L = $rows->slice($half);
             }
 
-            // Team names/logos are cross-derived:
-            // - Winners faced the Losers -> losers' rows contain winners' name in opponent_name and vice-versa.
-            $winnerName = $L->first()->opponent_name ?? 'Winner';
+            $winnerName = $L->first()->opponent_name ?? 'Uzvarētāji';
             $winnerLogo = $L->first()->opponent_logo ?? null;
-            $loserName  = $W->first()->opponent_name ?? 'Loser';
+            $loserName  = $W->first()->opponent_name ?? 'Zaudētāji';
             $loserLogo  = $W->first()->opponent_logo ?? null;
 
-            // Helpers
             $pair = function ($s) {
                 if (!is_string($s) || strpos($s, '-') === false) return [0, 0];
                 [$m, $a] = explode('-', $s, 2);
@@ -71,46 +64,52 @@ class GameShowController extends Controller
             $buildTeam = function ($group, string $teamName, ?string $teamLogo) use ($pair, $pct) {
                 $fgM = $fgA = $tpM = $tpA = $ftM = $ftA = 0;
 
-                foreach ($group as $r) {
-                    [$m, $a] = $pair($r->fg);       $fgM += $m; $fgA += $a;
-                    [$m, $a] = $pair($r->three_pt); $tpM += $m; $tpA += $a;
-                    [$m, $a] = $pair($r->ft);       $ftM += $m; $ftA += $a;
-                }
+                // Robust side team_id = mode of players’ team IDs (ignoring nulls)
+                $teamId = optional($group->pluck('player_team_id')->filter()->countBy()->sortDesc())->keys()->first();
 
                 return [
-                    'team' => $teamName,
-                    'logo' => $teamLogo,
-                    'players' => $group->map(fn($r) => [
-                        'id'   => $r->player_id,
-                        'name' => $r->player_name ?: '—',
-                        'img'  => $r->headshot,
-                        'min'  => $r->minutes,
-                        'fg'   => $r->fg,       'fgp'  => $r->fg_pct,
-                        'tp'   => $r->three_pt, 'tpp'  => $r->three_pt_pct,
-                        'ft'   => $r->ft,       'ftp'  => $r->ft_pct,
-                        'reb'  => $r->rebounds, 'ast'  => $r->assists, 'stl' => $r->steals,
-                        'blk'  => $r->blocks,   'tov'  => $r->turnovers, 'pf' => $r->fouls,
-                        'pts'  => $r->points,
-                    ])->values(),
-                    'totals' => [
-                        'pts' => (int)$group->sum('points'),
-                        'reb' => (int)$group->sum('rebounds'),
-                        'ast' => (int)$group->sum('assists'),
-                        'stl' => (int)$group->sum('steals'),
-                        'blk' => (int)$group->sum('blocks'),
-                        'tov' => (int)$group->sum('turnovers'),
-                        'pf'  => (int)$group->sum('fouls'),
-                        'fg'  => ['m' => $fgM, 'a' => $fgA, 'pct' => $pct($fgM, $fgA)],
-                        'tp'  => ['m' => $tpM, 'a' => $tpA, 'pct' => $pct($tpM, $tpA)],
-                        'ft'  => ['m' => $ftM, 'a' => $ftA, 'pct' => $pct($ftM, $ftA)],
-                    ],
+                    'team'    => $teamName,
+                    'team_id' => $teamId,         // used for route('nba.team.show', ['team' => ...])
+                    'logo'    => $teamLogo,
+                    'players' => $group->map(function ($r) {
+                        return [
+                            'player_id' => $r->player_id,  // used for route('nba.player.show', ['player' => ...])
+                            'name'      => $r->player_name ?: '—',
+                            'img'       => $r->headshot,
+                            'min'       => $r->minutes,
+                            'fg'        => $r->fg,       'fgp'  => $r->fg_pct,
+                            'tp'        => $r->three_pt, 'tpp'  => $r->three_pt_pct,
+                            'ft'        => $r->ft,       'ftp'  => $r->ft_pct,
+                            'reb'       => $r->rebounds, 'ast'  => $r->assists, 'stl' => $r->steals,
+                            'blk'       => $r->blocks,   'tov'  => $r->turnovers, 'pf'  => $r->fouls,
+                            'pts'       => $r->points,
+                        ];
+                    })->values(),
+                    'totals' => (function () use ($group, $pair, &$fgM, &$fgA, &$tpM, &$tpA, &$ftM, &$ftA, $pct) {
+                        foreach ($group as $r) {
+                            [$m1, $a1] = $pair($r->fg);       $fgM += $m1; $fgA += $a1;
+                            [$m2, $a2] = $pair($r->three_pt); $tpM += $m2; $tpA += $a2;
+                            [$m3, $a3] = $pair($r->ft);       $ftM += $m3; $ftA += $a3;
+                        }
+                        return [
+                            'pts' => (int)$group->sum('points'),
+                            'reb' => (int)$group->sum('rebounds'),
+                            'ast' => (int)$group->sum('assists'),
+                            'stl' => (int)$group->sum('steals'),
+                            'blk' => (int)$group->sum('blocks'),
+                            'tov' => (int)$group->sum('turnovers'),
+                            'pf'  => (int)$group->sum('fouls'),
+                            'fg'  => ['m' => $fgM, 'a' => $fgA, 'pct' => $pct($fgM, $fgA)],
+                            'tp'  => ['m' => $tpM, 'a' => $tpA, 'pct' => $pct($tpM, $tpA)],
+                            'ft'  => ['m' => $ftM, 'a' => $ftA, 'pct' => $pct($ftM, $ftA)],
+                        ];
+                    })(),
                 ];
             };
 
             $A = $buildTeam($W, $winnerName, $winnerLogo);
             $B = $buildTeam($L, $loserName,  $loserLogo);
 
-            // Score: prefer summed points (trust logs), fallback to any row's score string
             $sumScore = "{$A['totals']['pts']}-{$B['totals']['pts']}";
             $anyRow   = $rows->first();
             $scoreStr = $anyRow->score ?: $sumScore;
@@ -126,8 +125,8 @@ class GameShowController extends Controller
                     'score'    => $scoreStr,
                     'winner'   => $winnerIdx,
                 ],
-                'A' => $A, // winners
-                'B' => $B, // losers
+                'A' => $A,
+                'B' => $B,
             ];
         });
 
