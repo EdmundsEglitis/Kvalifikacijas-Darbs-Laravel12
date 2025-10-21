@@ -68,7 +68,7 @@
       </div>
 
       <div class="text-sm text-gray-300">
-        <div>Notikuma ID: <span class="text-white">{{ $game['event_id'] }}</span></div>
+
         <div>Datums: <span class="text-white">{{ \Illuminate\Support\Carbon::parse($game['date'])->toFormattedDateString() }}</span></div>
       </div>
     </div>
