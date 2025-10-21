@@ -135,10 +135,7 @@ class PlayerController extends Controller
 
         return view('nba.players.index', [
             'players' => $players,
-            // Tip for your Blade:
-            // You can now show both units, e.g.:
-            // Height: {{ $p->display_height ?? '-' }} @if($p->height_cm) ({{ $p->height_cm }} cm) @endif
-            // Weight: {{ $p->display_weight ?? '-' }} @if($p->weight_kg) ({{ $p->weight_kg }} kg) @endif
+
         ]);
     }
 
