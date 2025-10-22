@@ -8,6 +8,8 @@ use App\Models\NbaTeam;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\NbaPlayerGamelog;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 
 class PlayerController extends Controller
 {
@@ -60,84 +62,77 @@ class PlayerController extends Controller
         return null;
     }
 
-    public function index(Request $request)
-    {
-        $page    = max((int) $request->query('page', 1), 1);
-        $perPage = min(max((int) $request->query('perPage', 50), 10), 200);
-        $q       = trim((string) $request->query('q', ''));
-        $sort    = (string) $request->query('sort', 'name');  // name|team|height|weight
-        $dir     = strtolower((string) $request->query('dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+public function index(Request $request)
+{
+    $page    = max((int) $request->query('page', 1), 1);
+    $perPage = min(max((int) $request->query('perPage', 50), 10), 200);
+    $q       = trim((string) $request->query('q', ''));
+    $sort    = (string) $request->query('sort', 'name');  // name|team|height|weight
+    $dir     = strtolower((string) $request->query('dir', 'asc')) === 'desc' ? 'desc' : 'asc';
 
-        // ---- MySQL parse helpers (from display strings) ----
-        // 1st number = feet, 2nd number (if present) = inches
-        $feetExpr   = "REGEXP_SUBSTR(display_height, '[0-9]+', 1, 1)";
-        $inchExpr   = "COALESCE(REGEXP_SUBSTR(display_height, '[0-9]+', 1, 2), '0')";
-        $heightExpr = "CASE
-            WHEN display_height IS NULL OR display_height = '' THEN NULL
-            WHEN $feetExpr IS NULL THEN NULL
-            ELSE CAST($feetExpr AS UNSIGNED) * 12 + CAST($inchExpr AS UNSIGNED)
-        END";
+    // Base query without SQL regex so it works on any MySQL/MariaDB
+    $query = NbaPlayer::query()
+        ->select(['external_id','first_name','last_name','full_name','display_height',
+                  'display_weight','team_id','team_name','team_logo','image']);
 
-        // first number found inside '215 lbs' etc.
-        $weightExpr = "CASE
-            WHEN display_weight IS NULL OR display_weight = '' THEN NULL
-            ELSE CAST(REGEXP_SUBSTR(display_weight, '[0-9]+', 1, 1) AS UNSIGNED)
-        END";
+    // Search
+    if ($q !== '') {
+        $like = '%'.mb_strtolower($q).'%';
+        $query->where(function ($qb) use ($like) {
+            $qb->whereRaw('LOWER(full_name)  LIKE ?', [$like])
+               ->orWhereRaw('LOWER(team_name) LIKE ?', [$like])
+               ->orWhereRaw('LOWER(first_name) LIKE ?', [$like])
+               ->orWhereRaw('LOWER(last_name)  LIKE ?', [$like]);
+        });
+    }
 
-        // prefer Last, First; fallback to full_name
-        $sortName   = "TRIM(CONCAT(COALESCE(last_name,''), ', ', COALESCE(first_name,'')))";
-
-        $query = NbaPlayer::query()
-            ->select('*')
-            ->selectRaw("$heightExpr AS height_in")
-            ->selectRaw("$weightExpr AS weight_num")
-            ->selectRaw("$sortName  AS sort_name")
-            // ---- Metric numbers (cm / kg) ----
-            ->selectRaw("CASE WHEN ($heightExpr) IS NULL THEN NULL ELSE ROUND(($heightExpr) * 2.54) END AS height_cm")
-            ->selectRaw("CASE WHEN ($weightExpr) IS NULL THEN NULL ELSE ROUND(($weightExpr) * 0.453592, 1) END AS weight_kg");
-
-        // ---- Search (case-insensitive) ----
-        if ($q !== '') {
-            $like = '%'.mb_strtolower($q).'%';
-            $query->where(function ($qb) use ($like) {
-                $qb->whereRaw('LOWER(full_name)  LIKE ?', [$like])
-                   ->orWhereRaw('LOWER(team_name) LIKE ?', [$like])
-                   ->orWhereRaw('LOWER(first_name) LIKE ?', [$like])
-                   ->orWhereRaw('LOWER(last_name)  LIKE ?', [$like]);
-            });
-        }
-
-        // ---- Sorting with NULLS LAST emulation ----
-        switch ($sort) {
-            case 'team':
-                $query->orderByRaw('team_name IS NULL ASC')
-                      ->orderBy('team_name', $dir);
-                break;
-
-            case 'height':
-                $query->orderByRaw('height_in IS NULL ASC')
-                      ->orderByRaw('height_in '.$dir);
-                break;
-
-            case 'weight':
-                $query->orderByRaw('weight_num IS NULL ASC')
-                      ->orderByRaw('weight_num '.$dir);
-                break;
-
-            case 'name':
-            default:
-                $query->orderByRaw("(CASE WHEN sort_name = ',' OR sort_name = '' THEN 1 ELSE 0 END) ASC")
-                      ->orderByRaw("CASE WHEN sort_name = ',' OR sort_name = '' THEN full_name ELSE sort_name END $dir");
-                break;
-        }
+    // For name/team sorts we can sort in SQL safely.
+    if ($sort === 'name') {
+        $query->orderByRaw(
+            "CASE WHEN TRIM(CONCAT(COALESCE(last_name,''), ', ', COALESCE(first_name,''))) IN (',','') THEN 1 ELSE 0 END ASC"
+        )->orderByRaw(
+            "CASE WHEN TRIM(CONCAT(COALESCE(last_name,''), ', ', COALESCE(first_name,''))) IN (',','')
+                  THEN full_name ELSE TRIM(CONCAT(COALESCE(last_name,''), ', ', COALESCE(first_name,''))) END $dir"
+        );
 
         $players = $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
 
-        return view('nba.players.index', [
-            'players' => $players,
+    } elseif ($sort === 'team') {
+        $query->orderByRaw('team_name IS NULL ASC')->orderBy('team_name', $dir);
 
-        ]);
+        $players = $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
+
+    } else {
+        // height | weight  -> fetch all, compute metrics in PHP, then sort/paginate in memory
+        $collection = $query->get()->map(function ($p) {
+            // compute metrics
+            $heightIn = self::parseHeightInches($p->display_height ?? null);
+            $weightLb = self::parseWeightLbs($p->display_weight ?? null);
+
+            $p->height_in = $heightIn;
+            $p->weight_lb = $weightLb;
+            $p->height_cm = is_null($heightIn) ? null : (int) round($heightIn * 2.54);
+            $p->weight_kg = is_null($weightLb) ? null : round($weightLb * 0.453592, 1);
+            return $p;
+        });
+
+        // nulls last helper
+        $key = $sort === 'height' ? 'height_in' : 'weight_lb';
+        $sorted = $collection->sortBy(function ($p) use ($key) {
+            return is_null($p->$key) ? PHP_INT_MAX : $p->$key;
+        }, SORT_REGULAR, $dir === 'desc')->values();
+
+        // manual paginate
+        $total = $sorted->count();
+        $slice = $sorted->slice(($page - 1) * $perPage, $perPage)->values();
+        $players = new LengthAwarePaginator(
+            $slice, $total, $perPage, $page, ['path' => $request->url(), 'query' => $request->query()]
+        );
     }
+
+    return view('nba.players.index', ['players' => $players]);
+}
+
 
     public function show(Request $request, $external_id)
     {
