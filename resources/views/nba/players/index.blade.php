@@ -1,3 +1,4 @@
+{{-- resources/views/nba/players/index.blade.php --}}
 @extends('layouts.nba')
 @section('title','All players')
 
@@ -79,7 +80,7 @@
                     <a href="{{ $sortUrl('team') }}"
                        class="inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm
                               {{ $is('team') ? 'bg-[#84CC16] text-[#111827] font-semibold' : 'bg-[#111827] text-gray-200 hover:bg-[#0f172a]' }}">
-                        Komanda {!! $is('team') ? '<span class="text-[11px]">'.$arrow('team').'</span>' : '' !!}
+                        Komanda {!! $is('team') ? '<span class="text:[11px]">'.$arrow('team').'</span>' : '' !!}
                     </a>
                     <a href="{{ $sortUrl('height') }}"
                        class="inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm
