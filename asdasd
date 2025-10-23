@@ -1,0 +1,15 @@
+
+        window.config = {
+            userId: 11,
+            roomId: 13,
+            playerColor: "#FF5733",
+            rows: 8,
+            cols: 8,
+            mines: 10,
+            initialBoard: [[{"mine":false,"count":1},{"mine":false,"count":2},{"mine":true,"count":0},{"mine":false,"count":1},{"mine":false,"count":1},{"mine":true,"count":0},{"mine":true,"count":0},{"mine":false,"count":2}],[{"mine":false,"count":1},{"mine":true,"count":0},{"mine":false,"count":2},{"mine":false,"count":1},{"mine":false,"count":2},{"mine":false,"count":4},{"mine":true,"count":0},{"mine":false,"count":2}],[{"mine":false,"count":2},{"mine":false,"count":2},{"mine":false,"count":3},{"mine":false,"count":1},{"mine":false,"count":2},{"mine":true,"count":0},{"mine":false,"count":2},{"mine":false,"count":1}],[{"mine":false,"count":1},{"mine":true,"count":0},{"mine":false,"count":2},{"mine":true,"count":0},{"mine":false,"count":2},{"mine":false,"count":1},{"mine":false,"count":1},{"mine":false,"count":0}],[{"mine":false,"count":1},{"mine":false,"count":1},{"mine":false,"count":2},{"mine":false,"count":1},{"mine":false,"count":1},{"mine":false,"count":0},{"mine":false,"count":0},{"mine":false,"count":0}],[{"mine":false,"count":1},{"mine":false,"count":1},{"mine":false,"count":0},{"mine":false,"count":0},{"mine":false,"count":0},{"mine":false,"count":0},{"mine":false,"count":0},{"mine":false,"count":0}],[{"mine":true,"count":0},{"mine":false,"count":1},{"mine":false,"count":1},{"mine":false,"count":1},{"mine":false,"count":1},{"mine":false,"count":0},{"mine":false,"count":0},{"mine":false,"count":0}],[{"mine":false,"count":1},{"mine":false,"count":1},{"mine":false,"count":1},{"mine":true,"count":0},{"mine":false,"count":1},{"mine":false,"count":0},{"mine":false,"count":0},{"mine":false,"count":0}]],       // ✅ array, not double-encoded
+            savedFlags: [],
+            savedRevealed: [],
+            updateUrl: "https://minesweeper-paparde.on-forge.com/games/13/update",
+            restartUrl: "https://minesweeper-paparde.on-forge.com/games/13/restart"
+        };
+    

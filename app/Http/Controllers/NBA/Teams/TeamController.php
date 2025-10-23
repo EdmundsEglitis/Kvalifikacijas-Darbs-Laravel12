@@ -36,7 +36,8 @@ class TeamController extends Controller
         $team = NbaTeam::where('external_id', $external_id)->firstOrFail();
     
         $players = NbaPlayer::where('team_id', $external_id)
-            ->orderBy('full_name')->get();
+            ->orderBy('full_name')
+            ->get();
     
         // Upcoming games from schedules
         $now = now();
@@ -49,17 +50,19 @@ class TeamController extends Controller
             ->orderBy('tipoff')
             ->get();
     
-        // (Optional) Keep the original $games if another part of the page still needs all games
         $games = $upcomingGames;
     
         $standing = NbaStanding::where('team_id', $external_id)
-            ->orderByDesc('season')->first();
+            ->orderByDesc('season')
+            ->first();
     
         $standingsHistory = NbaStanding::where('team_id', $external_id)
             ->where('season', '>=', 2021)
-            ->orderByDesc('season')->get();
+            ->orderByDesc('season')
+            ->get();
     
         // Past games from logs (latest 15)
+        // Replaced ANY_VALUE() with MIN() for MySQL compatibility
         $pastGames = DB::table('nba_player_game_logs as l')
             ->join('nba_players as p', 'p.external_id', '=', 'l.player_external_id')
             ->where('p.team_id', $external_id)
@@ -67,12 +70,11 @@ class TeamController extends Controller
             ->whereNotNull('l.score')
             ->selectRaw('
                 l.event_id,
-                MAX(l.game_date)           as game_date,
-                /* If ANY_VALUE isn’t supported on your MySQL, replace with MIN() below */
-                ANY_VALUE(l.opponent_name) as opponent_name,
-                ANY_VALUE(l.opponent_logo) as opponent_logo,
-                ANY_VALUE(l.result)        as result,
-                ANY_VALUE(l.score)         as score
+                MAX(l.game_date) as game_date,
+                MIN(l.opponent_name) as opponent_name,
+                MIN(l.opponent_logo) as opponent_logo,
+                MIN(l.result) as result,
+                MIN(l.score) as score
             ')
             ->groupBy('l.event_id')
             ->orderByDesc('game_date')
@@ -80,8 +82,13 @@ class TeamController extends Controller
             ->get();
     
         return view('nba.teams.show', compact(
-            'team','players','games','upcomingGames','standing','standingsHistory','pastGames'
+            'team',
+            'players',
+            'games',
+            'upcomingGames',
+            'standing',
+            'standingsHistory',
+            'pastGames'
         ));
     }
-    
 }
