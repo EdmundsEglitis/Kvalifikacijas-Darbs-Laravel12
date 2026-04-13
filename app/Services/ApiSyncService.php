@@ -23,13 +23,13 @@ class ApiSyncService
 
     public function sync()
     {
-        $this->syncTeams();
-        $this->syncPlayers();
-        $this->syncUpcomingGames();
-        $this->syncPlayerDetails();
+        //$this->syncTeams();
+        //$this->syncPlayers();
+        //$this->syncUpcomingGames();
+        //$this->syncPlayerDetails();
         $this->syncPlayerGamelogs();
-        $this->syncStandingsRange(2021);
-        // $this->syncGames(); 
+        //$this->syncStandingsRange(2021);
+        //$this->syncGames(); 
     }
 
     protected function syncPlayers(): void
@@ -116,7 +116,7 @@ class ApiSyncService
             }
 public function syncPlayerGamelogs(): void
 {
-    \App\Models\NbaPlayer::chunk(200, function ($players) {
+    \App\Models\NbaPlayer::chunk(20, function ($players) {
         SyncPlayerGamelogJob::dispatch($players->pluck('external_id')->toArray());
     });
 }

@@ -64,8 +64,7 @@ class TeamController extends Controller
         // Past games from logs (latest 15)
         // Replaced ANY_VALUE() with MIN() for MySQL compatibility
         $pastGames = DB::table('nba_player_game_logs as l')
-            ->join('nba_players as p', 'p.external_id', '=', 'l.player_external_id')
-            ->where('p.team_id', $external_id)
+            ->where('l.team_external_id', $external_id)
             ->whereNotNull('l.game_date')
             ->whereNotNull('l.score')
             ->selectRaw('
@@ -90,5 +89,16 @@ class TeamController extends Controller
             'standingsHistory',
             'pastGames'
         ));
+    }
+
+    public function roster($external_id)
+    {
+        $team = NbaTeam::where('external_id', $external_id)->firstOrFail();
+
+        $players = NbaPlayer::where('team_id', $external_id)
+            ->orderBy('full_name')
+            ->get();
+
+        return view('nba.teams.roster', compact('team', 'players'));
     }
 }

@@ -23,7 +23,7 @@ class SyncPlayerGamelogJob implements ShouldQueue
     public int $timeout = 1200000;
 
 
-    public int $tries = 100;
+    public int $tries = 3;
 
 
     public function __construct(array $playerIds)
@@ -38,14 +38,24 @@ class SyncPlayerGamelogJob implements ShouldQueue
 
         foreach ($this->playerIds as $playerId) {
                 $this->processPlayer($nbaService, $playerId);
-      
+                usleep(300000); // 0.3 sec delay (adjust as needed)
         }
     }
 
 
     protected function processPlayer(NbaService $nbaService, int $playerId): void
     {
-        $gamelog = $nbaService->playerGameLog($playerId);
+        try {
+            $gamelog = $nbaService->playerGameLog($playerId);
+        } catch (\Exception $e) {
+
+            if (str_contains($e->getMessage(), 'usage_exceeded')) {
+                sleep(10); // cooldown
+                return;
+            }
+
+            throw $e;
+        }
 
         if (empty($gamelog)) {
             return;
@@ -83,29 +93,38 @@ class SyncPlayerGamelogJob implements ShouldQueue
                         'player_external_id' => $playerId,
                         'event_id'           => $eventId,
 
-                        'game_date'     => isset($meta['gameDate']) ? Carbon::parse($meta['gameDate'])->toDateString() : null,
-                        'opponent_name' => $meta['opponent']['displayName'] ?? null,
-                        'opponent_logo' => $meta['opponent']['logo'] ?? null,
-                        'result'        => $meta['gameResult'] ?? null,
-                        'score'         => $meta['score'] ?? null,
+                        'game_date'          => isset($meta['gameDate']) ? Carbon::parse($meta['gameDate'])->toDateString() : null,
 
-                        'minutes'       => $columns['MIN'] ?? null,
-                        'fg'            => $columns['FG'] ?? null,
-                        'fg_pct'        => isset($columns['FG%']) ? (float)$columns['FG%'] : null,
-                        'three_pt'      => $columns['3PT'] ?? null,
-                        'three_pt_pct'  => isset($columns['3PT%']) ? (float)$columns['3PT%'] : (isset($columns['3P%']) ? (float)$columns['3P%'] : null),
-                        'ft'            => $columns['FT'] ?? null,
-                        'ft_pct'        => isset($columns['FT%']) ? (float)$columns['FT%'] : null,
-                        'rebounds'      => $columns['REB'] ?? null,
-                        'assists'       => $columns['AST'] ?? null,
-                        'steals'        => $columns['STL'] ?? null,
-                        'blocks'        => $columns['BLK'] ?? null,
-                        'turnovers'     => $columns['TO'] ?? null,
-                        'fouls'         => $columns['PF'] ?? null,
-                        'points'        => $columns['PTS'] ?? null,
+                        'team_external_id'   => isset($meta['team']['id']) ? (int) $meta['team']['id'] : null,
+                        'team_abbreviation'  => $meta['team']['abbreviation'] ?? null,
+                        'team_logo'          => $meta['team']['logo'] ?? null,
 
-                        'created_at'    => now(),
-                        'updated_at'    => now(),
+                        'opponent_name'      => $meta['opponent']['displayName'] ?? null,
+                        'opponent_external_id' => isset($meta['opponent']['id']) ? (int) $meta['opponent']['id'] : null,
+                        'opponent_logo'      => $meta['opponent']['logo'] ?? null,
+
+                        'is_home'            => isset($meta['atVs']) ? ($meta['atVs'] !== '@') : null,
+
+                        'result'             => $meta['gameResult'] ?? null,
+                        'score'              => $meta['score'] ?? null,
+
+                        'minutes'            => $columns['MIN'] ?? null,
+                        'fg'                 => $columns['FG'] ?? null,
+                        'fg_pct'             => isset($columns['FG%']) ? (float) $columns['FG%'] : null,
+                        'three_pt'           => $columns['3PT'] ?? null,
+                        'three_pt_pct'       => isset($columns['3PT%']) ? (float) $columns['3PT%'] : (isset($columns['3P%']) ? (float) $columns['3P%'] : null),
+                        'ft'                 => $columns['FT'] ?? null,
+                        'ft_pct'             => isset($columns['FT%']) ? (float) $columns['FT%'] : null,
+                        'rebounds'           => $columns['REB'] ?? null,
+                        'assists'            => $columns['AST'] ?? null,
+                        'steals'             => $columns['STL'] ?? null,
+                        'blocks'             => $columns['BLK'] ?? null,
+                        'turnovers'          => $columns['TO'] ?? null,
+                        'fouls'              => $columns['PF'] ?? null,
+                        'points'             => $columns['PTS'] ?? null,
+
+                        'created_at'         => now(),
+                        'updated_at'         => now(),
                     ];
                 }
             }

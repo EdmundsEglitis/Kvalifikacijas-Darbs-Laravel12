@@ -9,31 +9,38 @@ class NbaPlayerGameLog extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'player_external_id',
-        'event_id',
+protected $fillable = [
+    'player_external_id',
+    'event_id',
 
-        'game_date',
-        'opponent_name',
-        'opponent_logo',
-        'result',
-        'score',
+    'game_date',
+    'team_external_id',
+    'team_abbreviation',
+    'team_logo',
 
-        'minutes',
-        'fg',
-        'fg_pct',
-        'three_pt',
-        'three_pt_pct',
-        'ft',
-        'ft_pct',
-        'rebounds',
-        'assists',
-        'steals',
-        'blocks',
-        'turnovers',
-        'fouls',
-        'points',
-    ];
+    'opponent_name',
+    'opponent_external_id',
+    'opponent_logo',
+
+    'is_home',
+    'result',
+    'score',
+
+    'minutes',
+    'fg',
+    'fg_pct',
+    'three_pt',
+    'three_pt_pct',
+    'ft',
+    'ft_pct',
+    'rebounds',
+    'assists',
+    'steals',
+    'blocks',
+    'turnovers',
+    'fouls',
+    'points',
+];
 
     public function player()
     {
