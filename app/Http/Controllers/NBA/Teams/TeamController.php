@@ -39,7 +39,6 @@ class TeamController extends Controller
             ->orderBy('full_name')
             ->get();
     
-        // Upcoming games from schedules
         $now = now();
         $upcomingGames = NbaGame::where(function ($q) use ($external_id) {
                 $q->where('home_team_id', $external_id)
