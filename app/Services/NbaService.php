@@ -25,18 +25,46 @@ class NbaService
 
     protected function request(string $endpoint, array $params = [])
     {
-        $response = Http::timeout($this->timeout)
-            ->withHeaders([
-                'x-rapidapi-key' => $this->key,
-                'x-rapidapi-host' => parse_url($this->baseUri, PHP_URL_HOST),
-            ])
-            ->get("{$this->baseUri}{$endpoint}", $params);
+        $attempts = 0;
+        $maxAttempts = 5;
+        $delaySeconds = 2;
 
-        if ($response->successful()) {
-            return $response->json();
+        while ($attempts < $maxAttempts) {
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'x-rapidapi-key' => $this->key,
+                    'x-rapidapi-host' => parse_url($this->baseUri, PHP_URL_HOST),
+                ])
+                ->get("{$this->baseUri}{$endpoint}", $params);
+
+            if ($response->successful()) {
+                return $response->json();
+            }
+
+            $status = $response->status();
+
+            // 🔥 Handle rate limits / temporary errors
+            if (in_array($status, [429, 503])) {
+                $attempts++;
+
+                sleep($delaySeconds);
+
+                // exponential backoff (2 → 4 → 8 → 16...)
+                $delaySeconds *= 2;
+
+                continue;
+            }
+
+            // ❌ Other errors → real failure
+            throw new \Exception(
+                "NBA API request failed: {$status} " . $response->body()
+            );
         }
 
-        throw new \Exception("NBA API request failed: " . $response->status() . ' ' . $response->body());
+        // 🚨 After retries, don't kill everything — return empty
+        return [
+            'response' => []
+        ];
     }
 
     public function allTeams(): array
@@ -58,7 +86,9 @@ class NbaService
                     if (!empty($team['id'])) {
                         $teams[$team['id']] = $team;
                     }
+                    usleep(300000);
                 }
+                usleep(300000);
             }
             return $teams;
             
@@ -80,12 +110,15 @@ class NbaService
         $all = [];
 
         foreach ($teams as $teamId => $team) {
+
             $teamPlayers = $this->playersByTeam($teamId);
+
             foreach ($teamPlayers as &$p) {
                 $p['teamId'] = (string) $teamId;
                 $p['teamName'] = $team['name'] ?? 'Unknown';
                 $p['teamLogo'] = $team['logo'] ?? null;
             }
+
             $all = array_merge($all, $teamPlayers);
         }
 
@@ -95,7 +128,7 @@ class NbaService
     public function upcomingGames(): array
     {
         $start = Carbon::today();
-        $end   = $start->copy()->addMonth();
+        $end   = $start->copy()->adddays(20);
     
         $allGames = [];
     
@@ -112,6 +145,7 @@ class NbaService
                 $response = $this->request('/nba-schedule-by-date', ['date' => $ymd]);
                 return $response['response'] ?? [];
             });
+             usleep(300000);
     
             if (empty($dayBlocks)) {
                 continue;

@@ -34,11 +34,8 @@ class SyncPlayerGamelogJob implements ShouldQueue
 
     public function handle(NbaService $nbaService): void
     {
-        set_time_limit(0);
-
         foreach ($this->playerIds as $playerId) {
-                $this->processPlayer($nbaService, $playerId);
-                usleep(300000); // 0.3 sec delay (adjust as needed)
+            $this->processPlayer($nbaService, $playerId);
         }
     }
 
@@ -49,11 +46,9 @@ class SyncPlayerGamelogJob implements ShouldQueue
             $gamelog = $nbaService->playerGameLog($playerId);
         } catch (\Exception $e) {
 
-            if (str_contains($e->getMessage(), 'usage_exceeded')) {
-                sleep(10); // cooldown
-                return;
-            }
-
+        if (str_contains($e->getMessage(), 'usage_exceeded')) {
+            throw $e; // ✅ let Laravel retry job
+        }
             throw $e;
         }
 
