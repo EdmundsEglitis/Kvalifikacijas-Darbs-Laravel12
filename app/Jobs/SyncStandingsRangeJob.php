@@ -40,5 +40,6 @@ class SyncStandingsRangeJob implements ShouldQueue
 
             usleep(500000);
         }
+        cache()->increment('processed');
     }
 }

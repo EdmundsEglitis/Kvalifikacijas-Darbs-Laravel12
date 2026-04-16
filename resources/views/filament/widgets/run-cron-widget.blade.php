@@ -10,7 +10,7 @@
         <x-filament::button
             tag="a"
             target="_blank"
-            href="{{ url('/cron-update/' . config('app.cron_token')) }}"
+            href="{{ url('/cron/run/' . config('app.cron_token')) }}"
         >
             atjaunināt
         </x-filament::button>

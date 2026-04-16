@@ -21,5 +21,6 @@ class SyncStandingsJob implements ShouldQueue
         foreach ($standings['entries'] as $entry) {
             // your existing mapping logic here
         }
+        cache()->increment('processed');
     }
 }

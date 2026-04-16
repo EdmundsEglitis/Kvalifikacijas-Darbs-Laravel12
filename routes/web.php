@@ -21,8 +21,7 @@ use App\Http\Controllers\Lbs\Players\PlayerController as LbsPlayerController;
 use App\Http\Controllers\Lbs\Teams\CompareController as LbsTeamsCompare;
 use App\Http\Controllers\Lbs\Players\CompareController as LbsplayersCompare;
 use App\Http\Controllers\CrossLeagueCompareController as CrossLeagueCompareController;
-
-use App\Services\ApiSyncService;
+use App\Http\Controllers\CronController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -111,13 +110,4 @@ Route::prefix('lbs')->name('lbs.')->group(function () {
 
 
 //cronjob route
-Route::get('/cron-update/{token}', function ($token) {
-
-    if ($token !== config('app.cron_token')) {
-        abort(403, 'Unauthorized');
-    }
-
-    app(ApiSyncService::class)->sync();
-
-    return response()->json(['status' => 'Database updated successfully']);
-});
+Route::get('/cron/run/{token}', [CronController::class, 'run'])->name('cron.run');

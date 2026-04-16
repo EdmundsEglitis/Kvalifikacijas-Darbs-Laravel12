@@ -42,5 +42,6 @@ class SyncPlayerDetailJob implements ShouldQueue
                 'age'        => $athlete['age'] ?? null,
             ]
         );
+        cache()->increment('processed');
     }
 }

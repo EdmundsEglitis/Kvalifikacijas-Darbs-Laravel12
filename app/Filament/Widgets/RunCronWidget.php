@@ -13,6 +13,6 @@ class RunCronWidget extends Widget
 
     public static function canView(): bool
     {
-        return true; // gate if needed
+        return true;
     }
 }

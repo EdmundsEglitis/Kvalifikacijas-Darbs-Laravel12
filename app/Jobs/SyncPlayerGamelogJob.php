@@ -132,5 +132,6 @@ class SyncPlayerGamelogJob implements ShouldQueue
                 array_keys($rows[0]) 
             );
         }
+        cache()->increment('processed');
     }
 }
