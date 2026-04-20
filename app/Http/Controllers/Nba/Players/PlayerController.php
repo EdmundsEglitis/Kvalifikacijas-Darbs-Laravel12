@@ -7,7 +7,7 @@ use App\Models\NbaPlayer;
 use App\Models\NbaTeam;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Models\NbaPlayerGamelog;
+use App\Models\NbaPlayerGameLog;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 
@@ -230,7 +230,7 @@ public function index(Request $request)
 
     public function compare(Request $request)
     {
-        $seasonRows = NbaPlayerGamelog::query()
+        $seasonRows = NbaPlayerGameLog::query()
             ->selectRaw('DISTINCT YEAR(game_date) AS season')
             ->orderByDesc('season')
             ->pluck('season')
@@ -249,7 +249,7 @@ public function index(Request $request)
         $perPage = (int) $request->input('per_page', 50);
         $perPage = max(10, min($perPage, 100));
 
-        $agg = NbaPlayerGamelog::query()
+        $agg = NbaPlayerGameLog::query()
             ->join('nba_players as p', 'p.external_id', '=', 'nba_player_game_logs.player_external_id')
             ->leftJoin('nba_player_details as d', 'd.external_id', '=', 'p.external_id')
             ->leftJoin('nba_teams as t', 't.external_id', '=', 'p.team_id')

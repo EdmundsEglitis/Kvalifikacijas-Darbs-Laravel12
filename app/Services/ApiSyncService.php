@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Services;
-use App\Models\NbaPlayerGamelog;
+use App\Models\NbaPlayerGameLog;
 use App\Jobs\SyncTeamsJob;
 use App\Jobs\SyncPlayersJob;
 use App\Jobs\SyncUpcomingGamesJob;

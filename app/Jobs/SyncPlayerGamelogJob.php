@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\NbaPlayerGamelog;
+use App\Models\NbaPlayerGameLog;
 use App\Services\NbaService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -126,7 +126,7 @@ class SyncPlayerGamelogJob implements ShouldQueue
         }
 
         if (!empty($rows)) {
-            NbaPlayerGamelog::upsert(
+            NbaPlayerGameLog::upsert(
                 $rows,
                 ['player_external_id', 'event_id'],
                 array_keys($rows[0]) 
