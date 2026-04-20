@@ -33,6 +33,5 @@ class SyncTeamsJob implements ShouldQueue
 
             usleep(900000);
         }
-        cache()->increment('processed');
     }
 }

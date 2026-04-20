@@ -9,8 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class SyncStandingsRangeJob implements ShouldQueue
 {
@@ -28,46 +27,99 @@ class SyncStandingsRangeJob implements ShouldQueue
         for ($season = $this->from; $season <= $to; $season++) {
             $standings = $nbaService->standings($season);
 
-            foreach ($standings as $conference) {
-                foreach (($conference['children'] ?? []) as $division) {
-                    $entries = $division['standings']['entries'] ?? [];
+            $entries = $this->extractEntries($standings);
 
-                    foreach ($entries as $entry) {
-                        $team = $entry['team'] ?? [];
-                        $stats = collect($entry['stats'] ?? [])->keyBy(function ($stat) {
-                            return $stat['name'] ?? $stat['type'] ?? null;
-                        });
+            Log::info('standings sync season', [
+                'season' => $season,
+                'entries_found' => count($entries),
+            ]);
 
-                        NbaStanding::updateOrCreate(
-                            [
-                                'team_id' => $team['id'] ?? null,
-                                'season'  => $season,
-                            ],
-                            [
-                                'team_name'          => $team['displayName'] ?? null,
-                                'abbreviation'       => $team['abbreviation'] ?? null,
-                                'wins'               => data_get($stats->get('wins'), 'value'),
-                                'losses'             => data_get($stats->get('losses'), 'value'),
-                                'win_percent'        => data_get($stats->get('winPercent'), 'value'),
-                                'playoff_seed'       => data_get($stats->get('playoffSeed'), 'value'),
-                                'games_behind'       => data_get($stats->get('gamesBehind'), 'value'),
-                                'avg_points_for'     => data_get($stats->get('avgPointsFor'), 'value'),
-                                'avg_points_against' => data_get($stats->get('avgPointsAgainst'), 'value'),
-                                'point_differential' => data_get($stats->get('pointDifferential'), 'value'),
-                                'home_record'        => data_get($stats->get('home'), 'summary'),
-                                'road_record'        => data_get($stats->get('road'), 'summary'),
-                                'last_ten'           => data_get($stats->get('lasttengames'), 'summary'),
-                                'streak'             => data_get($stats->get('streak'), 'value'),
-                                'clincher'           => data_get($stats->get('clincher'), 'displayValue'),
-                            ]
-                        );
-                    }
+            foreach ($entries as $entry) {
+                $team = $entry['team'] ?? [];
+                $teamId = $team['id'] ?? null;
+
+                if (!$teamId) {
+                    continue;
                 }
+
+                $stats = collect($entry['stats'] ?? [])->keyBy(function ($stat) {
+                    return strtolower($stat['name'] ?? $stat['type'] ?? '');
+                });
+
+                NbaStanding::updateOrCreate(
+                    [
+                        'team_id' => (string) $teamId,
+                        'season'  => $season,
+                    ],
+                    [
+                        'team_name'          => $team['displayName'] ?? trim(($team['location'] ?? '') . ' ' . ($team['name'] ?? '')),
+                        'abbreviation'       => $team['abbreviation'] ?? null,
+                        'wins'               => $this->num($stats, 'wins'),
+                        'losses'             => $this->num($stats, 'losses'),
+                        'win_percent'        => $this->num($stats, 'winpercent'),
+                        'playoff_seed'       => $this->num($stats, 'playoffseed'),
+                        'games_behind'       => $this->num($stats, 'gamesbehind'),
+                        'avg_points_for'     => $this->num($stats, 'avgpointsfor'),
+                        'avg_points_against' => $this->num($stats, 'avgpointsagainst'),
+                        'point_differential' => $this->num($stats, 'pointdifferential'),
+                        'home_record'        => $this->text($stats, 'home'),
+                        'road_record'        => $this->text($stats, 'road'),
+                        'last_ten'           => $this->text($stats, 'lasttengames'),
+                        'streak'             => $this->num($stats, 'streak'),
+                        'clincher'           => data_get($stats->get('clincher'), 'displayValue'),
+                    ]
+                );
             }
 
             usleep(500000);
         }
+    }
 
-        cache()->increment('processed');
+    private function extractEntries(array $data): array
+    {
+        $found = [];
+
+        $walk = function ($node) use (&$walk, &$found) {
+            if (!is_array($node)) {
+                return;
+            }
+
+            if (isset($node['entries']) && is_array($node['entries'])) {
+                foreach ($node['entries'] as $entry) {
+                    if (is_array($entry) && isset($entry['team'])) {
+                        $found[] = $entry;
+                    }
+                }
+            }
+
+            foreach ($node as $value) {
+                if (is_array($value)) {
+                    $walk($value);
+                }
+            }
+        };
+
+        $walk($data);
+
+        $unique = [];
+        foreach ($found as $entry) {
+            $teamId = $entry['team']['id'] ?? null;
+            if ($teamId) {
+                $unique[(string) $teamId] = $entry;
+            }
+        }
+
+        return array_values($unique);
+    }
+
+    private function num($stats, string $key): mixed
+    {
+        return data_get($stats->get($key), 'value');
+    }
+
+    private function text($stats, string $key): ?string
+    {
+        return data_get($stats->get($key), 'summary')
+            ?? data_get($stats->get($key), 'displayValue');
     }
 }

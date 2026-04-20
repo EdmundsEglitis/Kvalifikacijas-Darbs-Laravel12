@@ -46,6 +46,5 @@ class SyncPlayersJob implements ShouldQueue
                 ]
             );
         }
-        cache()->increment('processed');
     }
 }

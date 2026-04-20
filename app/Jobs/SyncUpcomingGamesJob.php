@@ -45,6 +45,5 @@ class SyncUpcomingGamesJob implements ShouldQueue
 
             usleep(300000);
         }
-        cache()->increment('processed');
     }
 }
