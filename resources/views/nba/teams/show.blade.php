@@ -17,7 +17,7 @@
           <h1 class="text-2xl sm:text-3xl font-bold text-white leading-tight">
             {{ $team->name }}
           </h1>
-          <p class="text-gray-400">Abbreviation: {{ $team->abbreviation ?? '—' }}</p>
+          <p class="text-gray-400">Saīsinājums: {{ $team->abbreviation ?? '—' }}</p>
         </div>
       </div>
 
@@ -232,7 +232,7 @@
 
       <div class="grid gap-3 sm:gap-4 [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]">
         <div class="bg-[#1f2937] border border-[#374151] rounded-xl p-3">
-          <div class="text-sm font-semibold text-white mb-1">Rkords</div>
+          <div class="text-sm font-semibold text-white mb-1">Rekords</div>
           <p class="text-xs text-gray-300">Uzvaras pret zaudēm atiecīgajā sezonā</p>
         </div>
         <div class="bg-[#1f2937] border border-[#374151] rounded-xl p-3">

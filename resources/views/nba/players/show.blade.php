@@ -28,7 +28,7 @@
           </a>
         @endif
       </p>
-      <p class="text-gray-400">Krekla nr.: {{ $details->display_jersey ?? '-' }}</p>
+      <p class="text-gray-400">Krekla nr: {{ $details->display_jersey ?? '-' }}</p>
     </div>
   </section>
 
