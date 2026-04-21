@@ -327,6 +327,8 @@ public function standings(int $season = 2024): array
         'year' => $season,
     ]);
 
+    
+
     // Defensive: ensure keys exist
     return $response['response']['standings'] ?? [];
 }

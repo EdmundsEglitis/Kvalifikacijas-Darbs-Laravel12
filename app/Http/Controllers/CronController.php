@@ -12,11 +12,7 @@ class CronController extends Controller
         if ($request->token !== config('app.cron_token')) {
             abort(403, 'Unauthorized');
         }
-
-        dispatch(function () {
-            app(ApiSyncService::class)->sync();
-        });
-
+        app(ApiSyncService::class)->sync();
         return view('cron.loader');
     }
 }

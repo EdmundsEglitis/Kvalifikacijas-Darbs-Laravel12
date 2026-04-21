@@ -14,11 +14,11 @@ class ApiSyncService
 {
     public function sync(): void
     {
-        //$this->syncTeams();
-        //$this->syncPlayers();
-        //$this->syncUpcomingGames();
-        //$this->syncPlayerDetails();
-        //$this->syncPlayerGamelogs();
+        $this->syncTeams();
+        $this->syncPlayers();
+        $this->syncUpcomingGames();
+        $this->syncPlayerDetails();
+        $this->syncPlayerGamelogs();
         $this->syncStandingsRange(2021);
     }
 
