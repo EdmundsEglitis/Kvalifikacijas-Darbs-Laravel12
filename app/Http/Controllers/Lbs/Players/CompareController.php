@@ -105,9 +105,19 @@ class CompareController extends Controller
             ")
             ->when($from, fn($q) => $q->whereRaw('YEAR(g.date) >= ?', [$from]))
             ->when($to,   fn($q) => $q->whereRaw('YEAR(g.date) <= ?', [$to]))
-            ->groupBy('player_id','player_name','player_photo','team_id','team_name','team_logo','subleague_id','parent_league_id','season')
-            ->orderByDesc('season')
-            ->orderBy('player_name');
+            ->groupByRaw('
+                p.id,
+                p.name,
+                p.photo,
+                t.id,
+                t.name,
+                t.logo,
+                t.league_id,
+                ls.parent_id,
+                YEAR(g.date)
+            ')
+            ->orderByRaw('YEAR(g.date) DESC')
+            ->orderBy('p.name');
 
         $collection = $base->get();
 
