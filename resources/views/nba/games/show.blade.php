@@ -5,7 +5,6 @@
 <style>
   th.sortable { cursor: pointer; user-select: none; }
   th.sortable .arrow { display:inline-block; width:1ch; margin-left:.35rem; opacity:.65; }
-  /* Ensure sorting UI never blocks clicks inside the body */
   table.js-sortable-table thead { position: relative; z-index: 1; }
   table.js-sortable-table tbody { position: relative; z-index: 0; }
 </style>

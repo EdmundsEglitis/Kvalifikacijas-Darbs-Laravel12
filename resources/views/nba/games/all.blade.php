@@ -14,6 +14,9 @@
   /* galvenes padarām acīmredzami klikšķināmas */
   th.sortable { cursor: pointer; user-select: none; }
   th.sortable .arrow { display:inline-block; width:1ch; margin-left:.35rem; opacity:.65; }
+
+  /* mobilajam: ļauj formu bērniem korekti sarauties */
+  .form-safe { min-width: 0; }
 </style>
 @endpush
 
@@ -23,7 +26,7 @@
   {{-- Filtri --}}
   <section class="bg-[#1f2937] border border-[#374151] rounded-2xl p-4 sm:p-5 fade-up">
     <form method="GET" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-7 items-end">
-      <div>
+      <div class="form-safe">
         <label class="block text-xs text-gray-400 mb-1">No sezonas</label>
         <select name="from" class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40">
           @foreach($seasons as $s)
@@ -32,7 +35,7 @@
         </select>
       </div>
 
-      <div>
+      <div class="form-safe">
         <label class="block text-xs text-gray-400 mb-1">Līdz sezonai</label>
         <select name="to" class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40">
           @foreach($seasons as $s)
@@ -41,19 +44,19 @@
         </select>
       </div>
 
-      <div class="lg:col-span-2">
+      <div class="form-safe lg:col-span-2">
         <label class="block text-xs text-gray-400 mb-1">Komanda / Pretinieks / Spēlētājs</label>
         <input name="team" value="{{ $teamQuery }}" placeholder="piem., Celtics vai Tatum"
                class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40" />
       </div>
 
-      <div class="lg:col-span-2">
+      <div class="form-safe lg:col-span-2">
         <label class="block text-xs text-gray-400 mb-1">Uzvarētājs satur</label>
         <input name="winner" value="{{ $winnerQ ?? '' }}" placeholder="piem., Celtics"
                class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40" />
       </div>
 
-      <div>
+      <div class="form-safe">
         <label class="block text-xs text-gray-400 mb-1">Rindu skaits lapā</label>
         <select name="per_page" class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40">
           @foreach([10,25,50,100] as $pp)
@@ -62,12 +65,12 @@
         </select>
       </div>
 
-      <div class="flex gap-3 lg:col-span-7">
-        <button class="px-4 py-2 rounded-lg bg-[#84CC16] text-[#111827] font-semibold hover:bg-[#a3e635] transition">Piemērot</button>
+      <div class="flex flex-col sm:flex-row sm:flex-wrap gap-3 lg:col-span-7 min-w-0">
+        <button class="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#84CC16] text-[#111827] font-semibold hover:bg-[#a3e635] transition">Piemērot</button>
         <a href="{{ route('nba.games.all') }}"
-           class="px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition">Atiestatīt</a>
+           class="w-full sm:w-auto text-center px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition">Atiestatīt</a>
         <input id="q" type="text" placeholder="Ātrā meklēšana šajā lapā…"
-               class="flex-1 min-w-[200px] bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40" />
+               class="w-full sm:flex-1 sm:min-w-[220px] min-w-0 bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#84CC16]/40" />
       </div>
     </form>
   </section>
