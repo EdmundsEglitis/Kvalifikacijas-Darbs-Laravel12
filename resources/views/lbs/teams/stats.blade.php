@@ -13,12 +13,32 @@
       @php
         $hasLogo = $team->logo && \Illuminate\Support\Facades\Storage::disk('public')->exists($team->logo);
       @endphp
+
       @if($hasLogo)
         <img src="{{ asset('storage/' . $team->logo) }}" alt="{{ $team->name }}"
              class="h-28 w-28 object-contain shadow-lg bg-[#111827] rounded-xl ring-2 ring-[#84CC16]/40">
       @endif
+
       <h1 class="text-4xl font-extrabold text-white drop-shadow">{{ $team->name }}</h1>
       <p class="text-[#F3F4F6]/70 text-sm">Komandas pārskats & statistika</p>
+
+      {{-- Season filter --}}
+      <form method="GET" class="mt-4">
+        <label for="season_id" class="sr-only">Sezona</label>
+        <select
+          id="season_id"
+          name="season_id"
+          onchange="this.form.submit()"
+          class="px-4 py-2 rounded-lg bg-[#1f2937] border border-[#374151] text-white focus:outline-none focus:ring-2 focus:ring-[#84CC16]"
+        >
+          <option value="">Visas sezonas</option>
+          @foreach($parentLeagues as $season)
+            <option value="{{ $season->id }}" {{ (string)request('season_id') === (string)$season->id ? 'selected' : '' }}>
+              {{ $season->name }}
+            </option>
+          @endforeach
+        </select>
+      </form>
     </section>
 
     {{-- W/L --}}
@@ -76,9 +96,10 @@
                 $hasPhoto = !empty($p['photo']) && \Illuminate\Support\Facades\Storage::disk('public')->exists($p['photo']);
                 $jersey   = $p['jersey_number'] ?? null;
                 $gp       = (int)($p['gamesPlayed'] ?? 0);
-                $sec      = (int)($p['minutes'] ?? 0); // avg seconds per game (already computed)
+                $sec      = (int)($p['minutes'] ?? 0);
                 $minsText = $gp === 0 ? '—' : sprintf('%d:%02d', intdiv($sec,60), $sec%60);
               @endphp
+
               <tr class="odd:bg-[#1f2937] even:bg-[#16202d] hover:bg-[#2a3647] transition">
                 <td class="px-4 py-3">
                   <a href="{{ route('lbs.player.show', $p['id']) }}" class="flex items-center gap-3 group">
@@ -90,7 +111,10 @@
                         {{ $jersey ?: '—' }}
                       </div>
                     @endif
-                    <span class="font-medium text-white group-hover:text-[#84CC16] transition-colors">{{ $p['name'] }}</span>
+
+                    <span class="font-medium text-white group-hover:text-[#84CC16] transition-colors">
+                      {{ $p['name'] }}
+                    </span>
                   </a>
                 </td>
 
@@ -122,7 +146,7 @@
       const secs = td.getAttribute('data-time');
       if (secs !== null) return parseInt(secs, 10) || 0;
       const txt = (td.textContent || '').trim();
-      const m = txt.match(/^(\d+):(\d{2})$/); // mm:ss fallback
+      const m = txt.match(/^(\d+):(\d{2})$/);
       return m ? (parseInt(m[1],10)*60 + parseInt(m[2],10)) : 0;
     }
     const raw = (td.textContent || '').replace(/[^\d.\-]/g,'').trim();
@@ -136,7 +160,7 @@
   }
 
   table.querySelectorAll('thead th[data-sort]').forEach(th => {
-    let dir = 1; // 1 asc, -1 desc; toggles each click
+    let dir = 1;
     th.addEventListener('click', () => {
       const headers = Array.from(th.parentNode.children);
       const col = headers.indexOf(th);
@@ -151,8 +175,8 @@
         return 0;
       });
 
-      dir *= -1;               // toggle next time
-      setIndicator(th, -dir);  // show the “next” arrow state
+      dir *= -1;
+      setIndicator(th, -dir);
 
       const frag = document.createDocumentFragment();
       rows.forEach(r => frag.appendChild(r));

@@ -14,7 +14,7 @@
       <form method="GET" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-8 items-end">
         <div class="lg:col-span-2">
           <label class="block text-xs text-gray-400 mb-1">No sezonas</label>
-          <select name="from" class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2">
+          <select id="fromSelect" name="from" class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2">
             @foreach($seasons as $s)
               <option value="{{ $s }}" @selected((int)$from === (int)$s)>{{ $s }}</option>
             @endforeach
@@ -23,7 +23,7 @@
 
         <div class="lg:col-span-2">
           <label class="block text-xs text-gray-400 mb-1">Līdz sezonai</label>
-          <select name="to" class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2">
+          <select id="toSelect" name="to" class="w-full bg-[#0f172a] border border-[#374151] rounded-lg px-3 py-2">
             @foreach($seasons as $s)
               <option value="{{ $s }}" @selected((int)$to === (int)$s)>{{ $s }}</option>
             @endforeach
@@ -54,7 +54,6 @@
             @endforeach
           </select>
         </div>
-
 
         <div class="lg:col-span-8 flex flex-wrap items-center gap-3 pt-1">
           <input id="q" type="text" placeholder="Ātrā meklēšana tabulā…"
@@ -106,7 +105,7 @@
                   data-parent="{{ $r['parent_league_id'] ?? '' }}"
                   data-sub="{{ $r['subleague_id'] ?? '' }}">
                 <td class="px-3 py-2 align-middle">
-                <input
+                  <input
                     type="checkbox"
                     class="rowSel accent-[#84CC16]"
                     data-payload='{{ json_encode([
@@ -165,6 +164,7 @@
 
   <script>
     const STORAGE_BASE = @json(asset('storage'));
+
     (function () {
       const parentSel = document.getElementById('parentSelect');
       const subSel    = document.getElementById('subSelect');
@@ -173,15 +173,20 @@
       function syncSubOptions() {
         const pid = parentSel.value;
         Array.from(subSel.options).forEach(opt => {
-          if (!opt.value) { opt.hidden = false; return; } 
+          if (!opt.value) { opt.hidden = false; return; }
           const p = opt.getAttribute('data-parent');
           opt.hidden = !!pid && p !== pid;
         });
+
         const current = subSel.options[subSel.selectedIndex];
         if (current && current.hidden) subSel.value = '';
       }
 
-      parentSel.addEventListener('change', () => { syncSubOptions(); applyFilters(); });
+      parentSel.addEventListener('change', () => {
+        syncSubOptions();
+        applyFilters();
+      });
+
       subSel.addEventListener('change', applyFilters);
 
       syncSubOptions();
@@ -191,27 +196,45 @@
     const rows      = Array.from(document.querySelectorAll('#standingsTable tbody tr'));
     const parentSel = document.getElementById('parentSelect');
     const subSel    = document.getElementById('subSelect');
+    const fromSel   = document.getElementById('fromSelect');
+    const toSel     = document.getElementById('toSelect');
+
+    function seasonNumber(value) {
+      if (value === null || value === undefined) return NaN;
+      const s = String(value).trim();
+
+      // works for values like "2023" or "2023/2024"
+      const match = s.match(/\d{4}/);
+      return match ? parseInt(match[0], 10) : NaN;
+    }
 
     function applyFilters() {
       const term = (q?.value || '').trim().toLowerCase();
       const pSel = parentSel?.value || '';
       const sSel = subSel?.value || '';
+      const from = seasonNumber(fromSel?.value);
+      const to   = seasonNumber(toSel?.value);
 
       rows.forEach(r => {
-        const hay = (r.dataset.team + ' ' + r.dataset.season).toLowerCase();
+        const hay = ((r.dataset.team || '') + ' ' + (r.dataset.season || '')).toLowerCase();
         const okQ = hay.includes(term);
 
         const rp = r.getAttribute('data-parent') || '';
         const rs = r.getAttribute('data-sub') || '';
+        const rowSeason = seasonNumber(r.dataset.season);
 
         const okP = !pSel || rp === pSel;
         const okS = !sSel || rs === sSel;
+        const okFrom = !isFinite(from) || (isFinite(rowSeason) && rowSeason >= from);
+        const okTo   = !isFinite(to)   || (isFinite(rowSeason) && rowSeason <= to);
 
-        r.style.display = (okQ && okP && okS) ? '' : 'none';
+        r.style.display = (okQ && okP && okS && okFrom && okTo) ? '' : 'none';
       });
     }
 
     q?.addEventListener('input', applyFilters);
+    fromSel?.addEventListener('change', applyFilters);
+    toSel?.addEventListener('change', applyFilters);
 
     document.addEventListener('DOMContentLoaded', applyFilters);
 
@@ -286,8 +309,8 @@
         if (leader === 0) behindPct = 0;
         else if (higherIsBetter) behindPct = ((leader - v) / Math.abs(leader)) * 100;
         else behindPct = ((v - leader) / Math.abs(leader)) * 100;
-        if (Math.abs(behindPct) < 0.5) return {label:'Līderis', cls:'text-[#84CC16]'}; 
-        return {label:`-${Math.round(behindPct)}% sal. ar līderi`, cls:'text-[#F97316]'}; 
+        if (Math.abs(behindPct) < 0.5) return {label:'Līderis', cls:'text-[#84CC16]'};
+        return {label:`-${Math.round(behindPct)}% sal. ar līderi`, cls:'text-[#F97316]'};
       });
     }
     const line = (c) => `<div class="text-xs mt-0.5 ${c.cls}">${c.label}</div>`;
@@ -302,23 +325,23 @@
       const cmpDiff = vsLeader(sel, 'diff',        true);
 
       compareGrid.innerHTML = sel.map((p,i) => {
-  const winPct = p.win_percent==null ? '—' : `${(Number(p.win_percent)*100).toFixed(1)}%`;
-  const diffTxt= p.diff==null ? '—' : (p.diff>=0?('+'+p.diff):p.diff);
+        const winPct = p.win_percent==null ? '—' : `${(Number(p.win_percent)*100).toFixed(1)}%`;
+        const diffTxt= p.diff==null ? '—' : (p.diff>=0?('+'+p.diff):p.diff);
 
+        const toUrl = (v) => {
+          if (!v) return null;
+          const s = String(v);
+          if (/^https?:\/\//i.test(s)) return s;
+          return `${STORAGE_BASE}/${s.replace(/^\/+/, '')}`;
+        };
 
-  const toUrl = (v) => {
-    if (!v) return null;
-    const s = String(v);
-    if (/^https?:\/\//i.test(s)) return s;
-    return `${STORAGE_BASE}/${s.replace(/^\/+/, '')}`;
-  };
-  const logoUrl = toUrl(p.logo);
+        const logoUrl = toUrl(p.logo);
 
-  const logo = logoUrl
-    ? `<img src="${logoUrl}" class="h-6 w-6 object-contain rounded bg-white p-[2px]" alt="">`
-    : `<span class="inline-flex items-center justify-center h-6 w-6 rounded bg-white/10"></span>`;
+        const logo = logoUrl
+          ? `<img src="${logoUrl}" class="h-6 w-6 object-contain rounded bg-white p-[2px]" alt="">`
+          : `<span class="inline-flex items-center justify-center h-6 w-6 rounded bg-white/10"></span>`;
 
-  const one = (v) => v==null ? '—' : Number(v).toFixed(1);
+        const one = (v) => v==null ? '—' : Number(v).toFixed(1);
 
         return `
           <article class="bg-[#0f172a]/60 border border-[#374151] rounded-xl p-4">
