@@ -16,25 +16,15 @@ Cross-League Compare (NBA ↔ LBS):
 
 Two paginated tables (NBA/LBS) rendered side-by-side.
 
-Global (server-side) search across all pages.
-
 Pick up to 5 players from each table and compare as mixed sets.
 
-Slide-over panel maximize per table (click table or “Maximize”), non-destructive restore on close.
+Tech Stack
 
-Mobile-first drawer UX.
-
-Hero image auto-fit: works for any image aspect ratio (cover + gradient + safe top spacing).
-
-Animations: reveal-on-scroll, subtle tilt, and A11Y-respecting reduced-motion behavior.
-
-🧱 Tech Stack
-
-Backend: Laravel 10+, PHP 8.1+
+Backend: Laravel 12, PHP 8.3+
 
 Database: MySQl
 
-Frontend: Blade, Tailwind CSS, vanilla JS
+Frontend: Blade, Tailwind CSS, JS
 
 Data:
 
